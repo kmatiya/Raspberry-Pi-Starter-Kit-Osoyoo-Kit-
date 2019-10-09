@@ -1,0 +1,293 @@
+﻿<html>
+<head>
+<title>Raspberry Pi3 Starter Kit Lesson 5: Flowing LED</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 5: Flowing LED</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_5_Flowing_LED.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+ 	<li><strong><a href="#1">Overview</a></strong></li>
+ 	<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+ 	<li><strong><a href="#3">Software Preparation</a></strong></li>
+ 	<li><strong><a href="#4">Work Principle</a></strong></li>
+ 	<li><strong><a href="#5">Hardware Setup</a></strong></li>
+ 	<li><strong><a href="#6">Software</a></strong></li>
+ 	<li><strong><a href="#7">For C language users</a></strong></li>
+ 	<li><strong><a href="#8">For python users</a></strong></li>
+</ul>
+<a id="1"></a><strong>Overview</strong><br/>
+
+In last lesson, we've learned how to control a single LED using Raspberry Pi. Now let's make the project a little bit more complex: Using Raspberry pi to<br/> control eight LEDs and make them blink in sequence.<br/><br/>
+
+<a id="2"></a><strong>Hardware Preparation:</strong>
+
+1 * Raspberry Pi<br/>
+1 * Breadboard<br/>
+8 * LED(2x Red, 2x Green, 2x white, 2x Yellow)<br/>
+8 * Resistor (200Ω)<br/>
+Some Jumper wires<br/>
+1 * T-Extension Board<br/>
+1 * 40-Pin Cable<br/><br/>
+
+<a id="3"></a><strong>Software Preparation</strong><br/>
+<strong>Note:</strong> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">Lesson 1: Getting started with raspberry pi</a>.<br/><br/>
+
+<a id="4"></a><strong>Work Principle</strong><br/>
+LED(light-emitting diode) is a two-lead semiconductor light source. It is a p-n junction diode that emits light when activated.When a suitable voltage is<br/> applied to the leads, electrons are able to recombine with electron holes within the device, releasing energy in the form of photons. This effect is called<br/> electroluminescence, and the color of the light (corresponding to the energy of the photon) is determined by the energy band gap of the semiconductor.<br/><br/>
+Connect the eight LEDs(positive electrode) to Resistor (200Ω) to limit the current, negative electrode to B17, B18, B28, B22, B23, B24, B25, B4 respectively.<br/> B means BCM(Broadcom pin number). If you don't know what is BCM pin#, please review our lesson 3: <a href="../Lesson 2 Introduction of Raspberry Pi GPIO" target="_blank" rel="noopener noreferrer">Introduction Of Raspberry Pi GPIO</a>.<br/>
+
+The resistor has been connected to the 3.3V power supply, if the low voltage(oV) is applied to negative electrode, the LED will light up.<br/> The schematic diagram as shown below:<br/>
+
+<center><img class="aligncenter" src=".\image\1.jpg" alt="" width="579" height="632" /></center><br/><br/>
+
+<a id="5"></a><strong>Step 1: Hardware Setup</strong><br/>
+Assembling the circuit as followed Connection Graph<br/>
+
+<a href=".\image\2.jpg"><center><img class="wp-image-7445 size-large aligncenter" src=".\image\2.jpg" alt="" width="1024" height="433" /></center></a>
+
+<a href=".\image\3.jpg"><center><img class="wp-image-7421 size-large aligncenter" src=".\image\3.jpg" alt="" width="900" height="570" /></center></a><br/><br/>
+
+<a id="6"></a><strong>Step 2:Software</strong><br/>
+we’ll provide two kinds of codes for C language users and Python language users.
+
+<a id="7"></a>For C Language users, please take following steps:<br/>
+
+<hr />
+
+Firstly, Please make sure the wiringPi library is installed, if you don't know how to install it, please visit Lesson 3: <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html" target="_blank" rel="noopener noreferrer">Introduction Of Raspberry Pi GPIO</a>.<br/><br/>
+5
+<strong>1)  Download the C sample code flow_led.c from osoyoo by typing following command:</strong><br/>
+<span style="color: #ff00ff;"><strong>cd  ~</strong></span><br/>
+<span style="color: #ff00ff;"><strong>sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_5/flow_led.c</strong></span><br/>
+Note:<br/><strong>sudo</strong> means to run with the permission of superuser; <br/><strong>wget </strong>stands for “web get” and means to download files over a network.<br/><strong>sudo  wget  http://osoyoo.com/driver/flow_led.c </strong>is to download folw_led.c file from osoyoo to your pi with the permission of superuser.<br/><br/>
+
+<a href=".\image\4.jpg"><center><img class="aligncenter wp-image-8250 size-large" src=".\image\4.jpg" alt="" width="1024" height="350" /></center></a><br/><br/>If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:<br/>
+<span style="color: #ff00ff;"><strong>sudo   nano  flow_led.c</strong></span><br/>
+
+<a href=".\image\5.jpg"><center><img class="aligncenter wp-image-7409 size-full" src=".\image\5.jpg" alt="" width="645" height="403" /></center></a><br/><br/>
+
+Then you will go to flow_led.c file, then copy the code to there, press Ctrl+X to Exit and<strong> </strong>type “Y” to save the file.<br/><br/>
+
+<strong>4) Compile Code</strong><br/>
+C language is high level language. Before running the project, the code need to compile as an executable file. Please enter the following command:<br/>
+<span style="color: #ff00ff;"><strong>gcc -Wall  -o  flow_led flow_led.c   -lwiringPi</strong></span><br/>
+<strong>Note: gcc: </strong>is GNU Compiler Collection. If you want to write your own C code and compile to run it, you need to master gcc.<br/> For more information about gcc, please visit <a href="https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html">https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html</a><br/>
+<strong>-Wall:</strong> to get more error when compile the code<br/>
+<strong>-o</strong>: to name the compiled file. You can name the file as your like. here we name as folw_led<br/>
+<strong>flow_led.c</strong>: means the original file which is compiled<br/>
+<strong>-lwiringPi</strong>: is to load the library wiringPi (l is short for library)<br/><br/>
+
+<strong>5) Run the Program</strong><br/>
+
+Enter the following command and press “enter” to run the project:<br/>
+<span style="color: #ff00ff;"><strong>sudo ./flow_led</strong></span><br/><br/>
+
+<strong>6) Running result</strong><br/>
+
+<a href=".\image\6.jpg"><center><img class="wp-image-7412 size-full aligncenter" src=".\image\6.jpg" alt="" width="643" height="640" /></center></a><br/><br/>
+
+Once run the program, the LED will blink from left to right, then reverse from right to left in sequence. If you wan't to stop the program, please go to terminal and type command: Ctrl + C, press "Enter" to stop it.  As we mentioned you can use <em>nano</em> to edit the code, so next we give details explanation about the code as following so that you can understand the code fully and try to modify the above code to personalize it or change the way the LEDs are chosen or lit.<br/><br/>
+
+<strong>C language Code Analysis</strong>
+<pre class="easycode; title:;lang:;">#include &lt; wiringPi.h&gt;
+#include &lt; stdio.h&gt;</pre>
+a) Add header file(.h file) which is used in this project at the beginning of the code.
+<strong>Note:</strong> WiringPi is a GPIO interface library for the Raspberry Pi, it includes a command-line utility <strong>gpio</strong> which can be used to program and setup the GPIO pins. You can use this to read and write the pins and even use it to control them from shell scripts.
+Stdio is a system I/O library for C, In C/C++ . I /O functions such as printf(), scanf(), cout,cin belong to Stdio library. So you need include head file in order to use these I/O functions.
+<pre class="easycode; title:;lang:;">//turn on LED --- custom function
+void turn_on(int channel){
+    digitalWrite(channel,LOW);
+}
+
+//turn off LED --- custom function
+void turn_off(int channel){
+    digitalWrite(channel,HIGH);
+}</pre>
+These two custom function above defined to turn on/off the LED. here we use the function in WiringPi Library, for more details regarding wiringPi and API, please visit: <a href="http://wiringpi.com/reference/">http://wiringpi.com/reference//</a><br/>
+
+<pre class="easycode; title:;lang:;"> void setup(){
+    int i;
+    for(i=0;i&lt;8;i++){
+        pinMode(i,OUTPUT); //i is the wiringPi GPIO code
+        digitalWrite(i,HIGH);//i is the wiringPi GPIO code
+
+    } 
+}</pre>
+Above statement configure the GPIO to BCM numbering scheme and set pins to output mode, set the initial level as high level (3.3V). The variable<strong> i</strong> in pinMode(<strong>i</strong>, OUTPUT) and digitalWrite(<strong>i</strong>,HIGH) function means the wiringPi GPIO pin code. i=0 means wiringPi pin0 or BCM17 , i=1 means wiringPi #1 or BCM#18... , for detail about wiringPi pin# and BCM pin# relation, please read our lesson 2 <a href="../Lesson 2 Introduction of Raspberry Pi GPIO"> Introduction Of Raspberry Pi GPIO</a> .
+<pre class="easycode; title:;lang:;"> int main(){
+    int i;
+    if(wiringPiSetup()==-1){
+        printf("setup wiringPi failed!\n");
+        printf("please check your setup\n");
+        return -1;
+    }
+    
+    setup();
+    printf("\n");
+    printf("\n");
+    printf("********************************|\n");
+    printf("|         Flow LED              |\n");
+    printf("|   ------------------------    |\n");
+    printf("|                               |\n");
+    printf("|   LED_R1 connect to GPIO0     |\n");
+    printf("|   LED_R2 connect to GPIO1     |\n");
+    printf("|   LED_G1 connect to GPIO2     |\n");
+    printf("|   LED_G2 connect to GPIO3     |\n");
+    printf("|   LED_Y1 connect to GPIO4     |\n");
+    printf("|   LED_Y2 connect to GPIO5     |\n");
+    printf("|   LED_W1 connect to GPIO6     |\n");
+    printf("|   LED_W2 connect to GPIO7     |\n");
+    printf("|                               |\n");
+    printf("|                               |\n");
+    printf("|                         OSOYOO|\n");
+    printf("********************************|\n");
+
+    while(1){
+        //turn led from left to right
+        printf("|****************************|\n");
+        printf("|         -----&gt;&gt;            |\n");
+        printf("|    From Left To Right!     |\n");
+        printf("|                            |\n");
+        printf("|****************************|\n");
+        for(i=0;i&lt;8;i++){
+            turn_on(i);
+            delay(150);
+            turn_off(i);
+        } 
+        //turn on from righ to left
+        printf("|****************************|\n");
+        printf("|         &lt;); printf("| From Right To Left! |\n"); printf("| |\n"); printf("|****************************|\n"); for(i=7;i&gt;=0;i--){
+            turn_on(i);
+            delay(150);
+            turn_off(i);
+        }
+    }
+    return 0;
+}</pre>
+Main function <strong>main()</strong> is a program shall contain a global function named main, which is the designated start of the program. Main function main() invokes setup()function to initialize the GPIO, then print the formatted output onto the screen.  while() function to set the LED blink from left to right then reverse from right to left in sequence.<br/>
+
+<hr />
+
+<a id="8"></a><strong>For Python Language users, please follow the below step:</strong><br/><br/>
+
+If your Raspberry Pi is connected with a Monitor through HDMI cable,then you can program in Python 3(IDLE) GUI environment directly,for more details please visit:<a href="../lesson 4 Python Light LED/index.html">Lesson 4 Python Light LED</a><br/>
+
+If your Pi is not connected with a monitor,   you can use command line to remote access Pi through ssh client. for more details, please visit:<a href="../Lesson 1 Get Started with Raspberry Pi">Get Started with Raspberry Pi</a><br/><br/>
+
+
+In this example, we use command line to remote access Pi through ssh client Putty.<br/>
+<strong>1)  Download the Python Sample code from osoyoo by typing following command:</strong><br/>
+<span style="color: #ff00ff;"><strong>cd  ~</strong></span><br/><br/>
+
+<span style="color: #ff00ff;"><strong>sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_5/flow_led.py</strong></span><br/><br/>
+
+<strong>If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:</strong><br/>
+
+<span style="color: #ff00ff;"><strong>sudo nano  flow_led.py</strong></span><br/>
+Note: <br/><strong>cd</strong> means to change to the intended directory from the current path. Informally,cd<br/><strong> ~</strong> is to go to the path /home/pi/, Nano is an editor. flow_led.py is the file name, you can name the file as you like.<br/><br/>
+
+Then copy the code from<a> here </a>,  then paste the code to file as above photo, press Ctrl+X to Exit and<strong> </strong>type “Y” to save the file.
+
+<a href=".\image\7.jpg"><center><img class="alignnone wp-image-7419 size-full" src=".\image\7.jpg" alt="" width="668" height="181" /></center></a><br/>
+Note:<br/><strong>sudo</strong> means to run with the permission of superuser;<br/><strong>wget </strong>stands for “web get” and means to download files over a network. <br/><strong>sudo  wget  http://osoyoo.com/driver/flow_led.py </strong>is to download folw_led.py file from osoyoo to your pi with the permission of superuser.<br/><br/>
+
+<strong>3) Run the Program</strong><br/>
+
+Enter the following command and press “enter” to run the project:<br/>
+<span style="color: #ff00ff;"><strong>sudo python ./flow_led.py</strong></span><br/><br/>
+
+<strong>4)Running Result</strong><br/>
+
+<a href=".\image\8.jpg"><center><img class="aligncenter wp-image-8251 size-full" src=".\image\8.jpg" alt="" width="764" height="701" /></center></a><br/><br/>Once the program is running, the LED will blink from left to right, then reverse from right to left in sequence.<br/><br/>
+
+<strong>Python language Code Analysis</strong>
+<pre><span style="color: #000000;">import</span> <span style="color: #000000;">RPi</span><span style="color: #434f54;">.</span><span style="color: #000000;">GPIO</span> <span style="color: #000000;">as</span> <span style="color: #000000;">GPIO </span>
+<span style="color: #000000;">import</span> <span style="color: #d35400;">time</span>
+</pre>
+Import Python GPIO Library and time library. The GPIO library is the library for interacting with the GPIO in Python. It does the job of simplifying the process. The time library is there so we can put a delay in, otherwise the blink might be too fast to notice.
+<pre><span style="color: #000000;">#</span> <span style="color: #000000;">set</span> <span style="color: #000000;">8</span> <span style="color: #000000;">pins</span> <span style="color: #5e6d03;">for</span> <span style="color: #000000;">8</span> <span style="color: #000000;">leds</span><span style="color: #434f54;">.</span>
+<span style="color: #000000;">LedPins</span> <span style="color: #434f54;">=</span> <span style="color: #000000;">[</span><span style="color: #000000;">17</span><span style="color: #434f54;">,</span><span style="color: #000000;">18</span><span style="color: #434f54;">,</span><span style="color: #000000;">27</span><span style="color: #434f54;">,</span><span style="color: #000000;">22</span><span style="color: #434f54;">,</span><span style="color: #000000;">23</span><span style="color: #434f54;">,</span><span style="color: #000000;">24</span><span style="color: #434f54;">,</span><span style="color: #000000;">25</span><span style="color: #434f54;">,</span><span style="color: #000000;">4</span><span style="color: #000000;">]</span>
+
+<span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;">Set 8 pins for LEDs, here use LedPins() to define the GPIO Pins, </span><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;">LedPins is list name. </span><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;">for more information about list,please visit <a href="https://docs.python.org/3/tutorial/introduction.html#lists">https://docs.python.org/3/tutorial/introduction.html#lists</a>.  
+</span><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;">from the list we can see there are eight LEDs connect to 17, 18, 22,23, 24, 25,4 respectly(</span><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;">We configure the GPIO to use the Broadcom numbering system)</span>
+</pre>
+<pre class="easycode; title:;lang:;">#print message at the begining ---custom function
+def print_message():
+    print ('******************************')
+    print ('|            flow leds       |')
+    print ('|     ---------------------  |')
+    print ('|   LED_R1 connect to GPIO0  |')
+    print ('|   LED_R2 connect to GPIO1  |')
+    print ('|   LED_G1 connect to GPIO2  |')
+    print ('|   LED_G2 connect to GPIO3  |')
+    print ('|   LED_Y1 connect to GPIO4  |')
+    print ('|   LED_Y2 connect to GPIO5  |')
+    print ('|   LED_W1 connect to GPIO6  |')
+    print ('|   LED_W2 connect to GPIO7  |')
+    print ('|        ----------------    |')
+    print ('|                            |')
+    print ('|                      OSOYOO|')
+    print ('****************************\n')
+    print ('Program is running...')
+    print ('Please press Ctrl+C to end the program...')
+
+Define a function to print the LED and GPIO connection. regarding how to define a function, please visi here
+
+#setup function for some setup---custom function
+def setup():
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    #set all LedPin's mode to output,and initial level to HIGH(3.3V)
+    GPIO.setup(LedPins,GPIO.OUT,initial=GPIO.HIGH)
+
+
+</pre>
+Here we use some RPI.GPIO function: GPIO.setwarnings(False) is to disable false warningGPIO.setmode(GPIO.BCM) is to set the GPIO port to BCM number; GPIO.setup(LedPins,GPIO.OUT,initial=GPIO.HIGH) is to set the eight GPIO port to output mode, and the innitial level is HIGH LEVEL. for more information about RPI.GPIO function, please visi <a href="https://sourceforge.net/p/raspberry-gpio-python/wiki/BasicUsage/">https://sourceforge.net/p/raspberry-gpio-python/wiki/BasicUsage/</a>
+<pre class="easycode; title:;lang:;"> def main():
+    #print info
+    print_message()
+    while True:
+        #turn LED on from left to right
+        print("***********************")
+        print("       -----&gt;&gt;         ")
+        print("  From Left To Right!  ")
+        print("***********************")
+        for pin in LedPins:
+            GPIO.output(pin,GPIO.LOW)
+            time.sleep(0.2)
+            GPIO.output(pin,GPIO.HIGH)
+            pass
+
+        #turn LED on from right to left
+        print("***********************")
+        print("       &lt;)
+        print("  From Right To Left!  ")
+        print("***********************")
+        for pin in reversed(LedPins):
+            GPIO.output(pin,GPIO.LOW)
+            time.sleep(0.2)
+            GPIO.output(pin,GPIO.HIGH)
+
+</pre>
+Main function main() invokes print_message() function first to print message onto the screen.  in while loop use The for statement to set the LED blink from left to right in sequence then reverse() to make the LEDs blink from right to left. for more information about the reversed() please visit <a href="https://www.programiz.com/python-programming/methods/built-in/reversed">https://www.programiz.com/python-programming/methods/built-in/reversed</a></font><center>
+<h2><a href="../Lesson 4 Python Light LED/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\9.jpg" alt=".\image\9.jpg" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\10.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 6 Breathing LED/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\11.jpg" alt="" width="156" height="41" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

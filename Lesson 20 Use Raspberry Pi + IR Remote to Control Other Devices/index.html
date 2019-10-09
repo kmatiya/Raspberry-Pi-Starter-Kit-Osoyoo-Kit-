@@ -1,0 +1,178 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 20: Use Raspberry Pi + IR Remote to Control Other Devices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 20: Use Raspberry Pi + IR Remote to Control Other Devices</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_20_Use_Raspberry_Pi+IR_Remote_to_Control_Other_Devices.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Experimental Principle</a></strong></li>
+<li><strong><a href="#5">Schematic diagram of each components</a></strong></li>
+<li><strong><a href="#6">Hardware Setup</a></strong></li>
+<li><strong><a href="#7">Software</a></strong></li>
+<li><strong><a href="#8">Compile program</a></strong></li>
+<li><strong><a href="#9">For C language users</a></strong></li>
+<li><strong><a href="#10">For python users</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Introduction</strong><br />
+1)In this lesson, we'll teach how to use Raspberry Pi get signal from IR remote controller and use IR controller to remote control 1602 LCD, DHT11, buzzer, and light sensor.<br/>2)When the remote controller can't work, please connect your raspberry Pi with Ethernet cable
+</p>
+<p><a id="2"></a><strong>Hardware Preparation</strong><br />
+1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * IR Receiver(VS1838B)<br />
+1 * Infrared Remote Controller<br />
+1 * DHT11<br />
+1 * IIC 1602<br />
+1 * buzzer<br />
+1 * light sensor<br />
+1 * <span id="result_box" class="short_text" lang="en"><span class="">Resistor</span></span>（10kΩ）<br />
+1 *MCP3008<br />
+Several jumper wires<br />
+1 * T-Extension Board with 40-Pin Cable(optional)</p>
+<p><a id="3"></a><strong>Software Preparation</strong><br />
+<strong>Note:</strong> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">lesson 1: getting started with raspberry pi</a>.</p>
+<p><a id="4"></a><strong>Experimental Principle</strong><br />
+When press the key of controller to IR receiver, corresponding device will take the action according to the program. For example, when pressing "1", 1602 LCD will turn on, when pressing "2", the 1602 LCD will turn off. The following table is key, corresponding device, and corresponding action:</p>
+<p>Key corresponding device corresponding action</p>
+<table>
+<tbody>
+<tr>
+<td width="144">Key</td>
+<td width="144">Corresponding device</td>
+<td width="144">Corresponding action</td>
+</tr>
+<tr>
+<td width="144">1</td>
+<td width="144">IIC 1602</td>
+<td width="144">Turn on</td>
+</tr>
+<tr>
+<td width="144">2</td>
+<td width="144">IIC 1602</td>
+<td width="144">Turn off</td>
+</tr>
+<tr>
+<td width="144">3</td>
+<td width="144">Light sensor</td>
+<td width="144">Get AD value</td>
+</tr>
+<tr>
+<td width="144">4</td>
+<td width="144">Buzzer</td>
+<td width="144">Turn on/off</td>
+</tr>
+<tr>
+<td width="144">5</td>
+<td width="144">DHT11</td>
+<td width="144">Get Temperature and Humidity</td>
+</tr>
+</tbody>
+</table>
+<p><a id="5"></a><strong>Schematic diagram of each components</strong><br />
+Note: Learn more about GPIO of raspberry pi, please review our lesson 2: <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html" target="_blank" rel="noopener noreferrer">Introduction Of Raspberry Pi GPIO</a><br />
+<center><img class="aligncenter " src=".\image\1.jpg" width="1155" height="460" /></p></center>
+<p><a id="6"></a><strong>Connection Graph</strong><br />
+<center><a href=".\image\2.jpg"><img class="aligncenter size-large wp-image-8747" src=".\image\2.jpg" alt="" width="1024" height="811" /></a></center>
+<center><a href=".\image\3.jpg"><img class="aligncenter size-large wp-image-8900" src=".\image\3.jpg" alt="" width="1024" height="768" /></a></p></center>
+<p><a id="7"></a><strong>Software</strong><br />
+Note:<br />
+1)Please be sure installation and setting LIRC. To learn more about installation, setting and testing LIRC, please review our  <a href="../Lesson 19 IR Remote with Raspberry Pi/index.html">lesson 19</a>.</p>
+<p>2)  Please enable the I2C and SPI first. Please enter the following command:<br />
+<strong>sudo  nano  /boot/config.txt</strong></p>
+<p>Open the file /boot/config.txt, find the code lines”dtparam=i2c_arm” and dtparam=spi"，checking if there is # sign in front of the line, uncomment it (remove the # in front of this line), and make sure the end of the line is”on”, finally the code should look like this:<br />
+<center><a href=".\image\4.jpg"><img class="aligncenter size-full wp-image-8892" src=".\image\4.jpg" alt="" width="983" height="108" /></a></p></center>
+<p><a id="8"></a><strong>Compile program</strong><br />
+In this lesson, we’ll provide codes of C language and Python language. New starters can select one according to their interest or habit.</p>
+<p><a id="9"></a><strong>For C language users</strong></p>
+<hr />
+<p>Please be sure installation wiringpi. If you have not installed wiringPi, read  <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html">installation wiringpi</a></p>
+<p>1) Download and unzip the codes by typing the following commands in pi terminal:<br />
+<strong>cd ~</strong><br />
+<strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_20/lesson20.c</strong></p>
+<p>2) Compile program<br />
+<strong>sudo  gcc -Wall -o lesson20 lesson20.c -lwiringPi -llirc_client</strong><br />
+<center><a href=".\image\5.jpg"><img class="aligncenter size-large wp-image-8893" src=".\image\5.jpg" alt="" width="1024" height="328" /></a></p></center>
+<p>3) Run program</p>
+<p>A.Check GPIO mode<br />
+Before running program, please run command <strong>gpio  readall </strong>to check whether MOSI、MISO、SCLK(B10、B9、B11) works as alternative functions, If the terminal shows as following:<br />
+<center><a href=".\image\6.jpg"><img class="aligncenter size-full wp-image-8891" src=".\image\6.jpg" alt="" width="869" height="720" /></a></center>
+Please run the following command to change as alternative functions</p>
+<p><strong>gpio  -g  mode  9    alt0</strong><br />
+<strong>gpio  -g  mode  10   alt0</strong><br />
+<strong>gpio  -g  mode   11   alt0</strong></p>
+<p>If the terminal shows as the following, please go on running program<br />
+<center><img class="aligncenter size-medium" src=".\image\7.jpg" width="865" height="588" /></p></center>
+<p>B.Run program<br />
+<strong>sudo ./lesson20</strong></p>
+<p><strong>Note: </strong>If you get error when running the program, please run the following command or reboot your Pi:<br />
+<strong>sudo /etc/init.d/lirc restart</strong><br />
+<center><a href=".\image\8.jpg"><img class="aligncenter size-full wp-image-8894" src=".\image\8.jpg" alt="" width="696" height="146" /></a></p></center>
+<p>4) <strong>Test project result</strong><br />
+Please press controller to IR receiver.  When pressing "1", 1602 LCD will turn on, when pressing "2", the 1602 LCD will turn off. When pressing 3, the terminal will print AD value from light sensor. When pressing 4, the buzzer will turn on/off. When pressing 5, the terminal will print temperature and humidity value from DHT11.<br />
+<center><a href=".\image\9.jpg"><img class="aligncenter size-full wp-image-8895" src=".\image\9.jpg" alt="" width="616" height="208" /></a><br /></center>
+<center><a href=".\image\10.jpg"><img class="aligncenter size-large wp-image-8899" src=".\image\10.jpg" alt="" width="1024" height="768" /></a></p></center>
+<p><a id="10"></a><strong>For python users</strong></p>
+<hr />
+<p>Learn more about Python, please go to <a href="../Lesson 4 Python Light LED/index.html">Raspberry Pi Starter Kit lesson 4</a></p>
+<p>1) Download and unzip the code by typing the following commands in pi terminal:<br />
+<strong>cd ~</strong><br />
+<strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_20/python-code.tar.gz</strong><br />
+<strong>tar -xzvf  python-code.tar.gz</strong><br />
+<center><a href=".\image\11.jpg"><img class="aligncenter size-large wp-image-8896" src=".\image\11.jpg" alt="" width="1024" height="482" /></a></p></center>
+<p>2) Edit or create ./lircrc file at the path /home/pi/<br />
+<strong>cd ~</strong><br />
+<strong>sudo  nano  .lircrc</strong></p>
+<p>.lircrc file is created at lesson 19, please replace the code as the following code, and then press “ctrl” + “X” and then press “y” to save the file, at last, press “enter” to exit</p>
+<pre class="easycode; title: .lircrc;lang:;">begin
+    prog = irexec
+    button = KEY_1
+    config = sudo python /home/pi/open-1602.py
+end
+begin
+    prog = irexec
+    button = KEY_2
+    config = sudo python /home/pi/close-1602.py
+end
+begin
+    prog = irexec
+    button = KEY_3
+    config = sudo python /home/pi/get-lightsensor.py
+end
+begin
+    prog = irexec
+    button = KEY_4
+    config = sudo python /home/pi/controlbeep.py
+end
+begin
+    prog = irexec
+    button = KEY_5
+    config = sudo python /home/pi/get-tem-hum.py
+end
+
+</pre>
+<p>3) Run program<br />
+<strong>irexec</strong></p>
+<p><strong>Note: </strong>If you get back a error when runnig the program, please run the following command or reboot your Pi:<br />
+<strong>sudo /etc/init.d/lirc restart</strong><br />
+<center><a href=".\image\12.jpg"><img class="aligncenter size-full wp-image-8897" src=".\image\12.jpg" alt="" width="699" height="144" /></a></p></center>
+<p>3) Test project result<br />
+Please press controller to IR receiver. When pressing "1", 1602 LCD will turn on, when pressing "2", the 1602 LCD will turn off. When pressing 3, the terminal will print AD value from light sensor. When pressing 4, the buzzer will turn on/off. When pressing 5, the terminal will print temperature and humidity value from DHT11.<br />
+<center><a href=".\image\13.jpg"><img class="aligncenter size-large wp-image-8898" src=".\image\13.jpg" alt="" width="1024" height="372" /></a><br /></center>
+<center><a href=".\image\14.jpg"><img class="aligncenter size-large wp-image-8899" src=".\image\14.jpg" alt="" width="1024" height="768" /></a></p></center>
+<center><a href="../Lesson 19 IR Remote with Raspberry Pi/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\15.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\16.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 21 Make IOT Home Alarm System with Pi/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\17.jpg" alt="" width="156" height="41" /></a></font></center>

@@ -1,0 +1,124 @@
+﻿<head>
+<font face=Arial><title>Raspberry Pi Starter Kit Lesson 1: Get Started with Raspberry Pi</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 1: Get Started with Raspberry Pi</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_1_Get_Started_with_Raspberry_Pi.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Installation Raspbian Operation System(OS)</a></strong></li>
+<li><strong><a href="#5">Access to Raspberry Pi’s Console</a></strong></li>
+<li><strong><a href="#6">Using Console in GUI</a></strong></li>
+<li><strong><a href="#7">Using Console</a></strong></li>
+<li><strong><a href="#8">A. Directly</a></strong></li>
+<li><strong><a href="#9">B. Remotely</a></strong></li>
+</ul>
+<p><a id="1"><strong>Introduction</strong></a></p>
+<p><span style="font-family: Arial;">Welcome to our first lesson on Raspberry Pi. Unlike popular control board such as Arduino, Raspberry Pi is a REAL personal computer with Operation System(OS) like Apple iOS in MacBook and Windows in PC. This allows Raspberry Pi to do much more complicated jobs than Arduino can do.<br />
+First, please learn about 4 model of raspberry Pi boards differences.
+<center><p><img class="aligncenter" src=".\image\1.jpg" width="650" height="1000" /></p></center>
+In this lesson, we will tell you how to install and config Raspbian OS(a Debian Linux distro) in your lovely Raspberry Pi.</span></p>
+<p><span style="font-family: Arial;"><br />
+
+<p><a id="3"><span style="font-family: Arial;"><strong>Software Preparation:</strong></span><br /></a><br />
+<span style="font-family: Arial;">Imager utility: Win32DiskImager utility </span><br />
+<span style="font-family: Arial;">OS: Raspbian (Use OS Raspbian 2016-11-25 in the subsequent tutorials)</span><br />
+<span style="font-family: Arial;">Format Tool: SDFormatter(Optional)</span><br />
+<span style="font-family: Arial;">SSH Tool: PuTTY(for Windows users)</span></p>
+Note:<br />
+1. Please visit <strong>https://sourceforge.net/projects/win32diskimager/</strong> to download Win32DiskImager utility<br />
+2. Please visti <strong>https://downloads.raspberrypi.org/raspbian/images/</strong> to download history version of Raspbian<br />
+3. Please visti <strong>https://www.sdcard.org/downloads/formatter_4/</strong> to download SDFormatter<br />
+4. Please visit <strong>https://www.chiark.greenend.org.uk/~sgtatham/putty/</strong> to download PuTTY<br /> 
+
+<p><a id="4"></p>
+<p><b><span style="font-family: Arial;">Installation Raspbian Operation System(OS):</span></b></p>
+<p></a></p>
+<p><span style="font-family: Arial;">Download the image for the Raspbian system onto your computer. You can select any version of RASPBIAN system on the official website: <strong>https://downloads.raspberrypi.org/raspbian/images/ </strong>. Write the image via Win32DiskImager utility into your microSD/TF card(minimum 8G), then plug the card into the slot on your Raspberry Pi.</span><br />
+<span style="font-family: Arial;"><strong>Note</strong>: For 2016-11-25 release or above, SSH (a protocol securing remote login session and other network service) is Disabled by default. Therefore, when you need to log in remotely, you need to create a file named "ssh" under /boot/ to enable it.</span></p>
+<center><p><img class="aligncenter" src=".\image\2.jpg" width="541" height="468" /></p></center>
+<p><a id="5"></p>
+<p><span style="font-family: Arial;"><b>Access to Raspberry Pi's Console</b></span><br /></a><br />
+<span style="font-family: Arial;">In the subsequent tutorials, the console will be used from time to time. Use use console to  interact with Raspbian OS by command line. Therefore, you may need to know how to access to Raspberry Pi's console.</span></p>
+<p><a id="6"></p>
+<p><span style="font-family: Arial;"><strong>Using Console in GUI (terminal, recommended for beginners)</strong></span><br /></a><br />
+<span style="font-family: Arial;">Connect a monitor to Raspberry Pi via HDMI cable. Connect mouse and keyboard to USB ports. Make sure your Raspbian OS MicroSD card is plug in the SD card slot. At last, connect a 5V 2A DC power to the RPi. There is a little different from Pi Zero to Pi 3, please refer to the installation guide as followed:</span></p>
+<center><table border="1">
+<tbody>
+<tr>
+<td><center><strong>Raspberry Pi Zero</strong></center></td>
+<td><center><strong>Raspberry Pi Zero W</strong></center></td>
+</tr>
+<tr>
+<td><a href=".\image\3.jpg"><img class="alignnone wp-image-12210" src=".\image\3.jpg" alt="" width="500" height="500" /></a></td>
+<td><a href=".\image\4.jpg"><img class="alignnone wp-image-12211" src=".\image\4.jpg" alt="" width="500" height="500" /></a></td>
+</tr>
+<tr>
+<td><center><strong>Raspberry Pi 2</strong></center></td>
+<td><center><strong>Raspberry Pi 3</strong></center></td>
+</tr>
+<tr>
+<td><a href=".\image\5.jpg"><img class="alignnone wp-image-12212" src=".\image\5.jpg" alt="" width="500" height="433" /></a></td>
+<td><a href=".\image\6.jpg"><img class="alignnone wp-image-12213" src=".\image\6.jpg" alt="" width="500" height="433" /></a></td>
+</tr>
+</tbody>
+</table>
+</center>
+<p><span style="font-family: Arial;">Power on the screen and connect wifi hotspot if needed. Then you can see the display showing the Raspberry Pi icon as shown below:</span></p>
+<center><p><img class="aligncenter" src=".\image\7.jpg" alt="" width="541" height="466" /></p></center>
+<p><span style="font-family: Arial;">If the monitor displays colored texts with a black background after booting, and that is in console. You can just use this as a terminal (but not recommend for beginners), or change the option for automatically loading a graphic user interface (GUI). To activate GUI, you can type in startx with the keyboard and press <strong style="font-size: small; text-align: justify;">Enter</strong><span style="font-family: Arial;">, and to always boot up to GUI, type in <strong><em>sudo raspi-config</em></strong> and go through </span><strong>Boot Options</strong> > <strong style="font-family: Arial;">Desktop</strong><span style="font-size: small; text-align: justify;">/</span><strong style="font-family: Arial;">Desk Autologin</strong><span style="font-family: Arial;">, and reboot.</span> <span style="font-family: Arial;">Wait for a while and the GUI display will show up as below.</span></span></p>
+<p><a id="7"></p>
+<p><span style="font-family: Arial;"><strong>Using Console</strong></span><br /></a><br />
+<span style="font-family: Arial;">There are several ways to use the console only and they can be divided into mainly two ways: using directly and remotely.</span></p>
+<p><a id="8"></p>
+<p><span style="font-family: Arial;"><strong>A. Directly(A screen monitor is needed when you use the console directly.)</strong></span><br /></a><br />
+<span style="font-family: Arial;">1. Connect the monitor to power. Then connect it with the Raspberry Pi via the HDMI cable. Connect the keyboard and mouse. Plug the MicroSD card into the Raspberry Pi. At last, connect a 5V 2.5A DC power to the RPi. Power on the screen and connect wifi hotspot if needed. Then you can see the console full screen.</span><br />
+<span style="font-family: Arial;">2. Click the icon of <strong>Terminal</strong> on the screen, or press <strong> CTRL</strong>+<strong>ALT</strong>+<strong>T </strong>simultaneously.</span></p>
+<center><p><img class="aligncenter" src=".\image\8.jpg" alt="" width="539" height="300" /></p></center>
+<p><span style="font-family: Arial;">3.Then a terminal will pop up as follows: </span></p>
+<center><p><img class="aligncenter" src=".\image\9.jpg" alt="" width="541" height="305" /></p></center>
+<p><span style="font-family: Arial;">If you boot into GUI instead, Open a terminal, type in sudo raspi-config and press enter, go through <strong>Boot Options</strong> > <strong>Console</strong>/<strong>Console Autologin</strong>, and reboot. </span></p>
+<p><a id="9"></p>
+<p><span style="font-family: Arial;"><strong>B. Remotely</strong></span><br /></a><br />
+<span style="font-family: Arial;">Note: when you need to log in remotely, you need to be enable the SSH server. Following the following way can be enable the SSH server via command. Press the command <span style="background-color: #ffff00;">sudo raspi-config</span> in terminal, and then select Advanced Options and click enter; and then select SSH and click enter</span><br />
+<center><img class="aligncenter" src=".\image\10.jpg" alt="" /><br /></center>
+<center><img class="aligncenter" src=".\image\11.jpg" alt="" /><br /></center>
+<span style="font-family: Arial;">For three platforms: Windows, Mac and Linux, it might be a little bit different to do this.</span></p>
+<p<span style="font-family: Arial;"><strong>(1) Linux and Mac users can easily log into the Raspberry Pi via ssh. On Linux or Mac, find Terminal and open it</strong>.</span></p>
+<center><p><img class="aligncenter" src=".\image\12.jpg" alt="" width="540" height="371" /></p></center>
+<p><span style="font-family: Arial;">Type in ssh pi@IP address(ssh is the tool for remote login; pi is the user name, and as the name suggests, your RPi's IP address) and then press <strong>Enter</strong> to confirm. For example:</span><br />
+<span style="background-color: #ffff00;"><span style="font-family: Arial;">ssh pi@192.168.0.114</span></span></p>
+<p><span style="font-size: small;">If you get a prompt that no ssh is found, you need to install a ssh tool like Ubuntu and Debian by yourself: </span><br />
+<span style="font-size: small; font-family: Arial; background-color: #ffff00;">sudo apt-get install ssh</span></p>
+<p><strong>(2) For Windows users, you may use a ssh tool to log into Raspberry Pi remotely, like PuTTY</strong>.<br />
+<strong>Step 1.</strong> Plug the TF card into the Raspberry Pi, power the RPi 3 with a 5V 2.5A DC power and connect wifi hotspot (or the Ethernet cable). Now the Raspberry Pi is ready.<br />
+<strong>Note:</strong> when connect wifi hotspot, you need to connect with screen monitor, keyboard and mouse<br />
+<strong>Step 2. Find out the IP address of the RPi 3.</strong><br />
+<strong>Method A</strong>: Connect your Pi to monitor and mouse, click LAN or Wifi icon to get the IP address as following photo</p>
+<center><p><img class="aligncenter" src=".\image\13.jpg" alt="" width="542" height="269" /></p></center>
+<p><strong>Method B: </strong>you can  also find the IP address by typing terminal command : <em><strong>ifconfig</strong></em></p>
+<p><span style="font-family: Arial;"><strong>Step 3.</strong> Open PuTTY and click <strong>Session</strong> on the left tree-alike structure (generally it's collapsed upon PuTTY startup):</span></p>
+<center><p><img class="aligncenter" src=".\image\14.jpg" alt="" align="middle" /></p></center>
+<p><span style="font-family: Arial;"><strong>Step 4.</strong> Enter the IP address you got from<strong> Step 2 </strong>into the textbox under Host Name (or IP address) and 22 under Port (by default it is 22) /span></span></p>
+<center><p><img class="aligncenter" src=".\image\15.jpg" alt="" /></p></center>
+<p><span style="font-family: Arial;">5. Click Open. Note that when you first log in to the Raspberry Pi with the IP address, you'll be prompted with a security reminder. Just click <strong>Yes</strong>. When the PuTTY window prompts login as: type in the user name: <strong>pi</strong>, and password: <strong>raspberry</strong> (the default one, if you haven't changed it). </span><span style="font-style: italic;"><strong><br />
+<span style="font-family: Arial;">Note:</span></strong><br />
+<span style="font-family: Arial;">when you're typing the password in, the window shows nothing just null, but you're in fact is typing things in. So just focus on typing it right and press <strong style="font-weight: 400;">Enter</strong>. After you log in the RPi successfully, the window will display as follows:</span></span></p>
+<center><p><img class="aligncenter" src=".\image\16.jpg" alt="" width="541" height="342" /></p></center>
+<p style="text-align: justify;"><span style="font-family: Arial;">For other platforms, please contact your supplier.</span></p>
+<p style="text-align: justify;">Now, no matter what method you take, you can get in the console of your Raspberry Pi.</p>
+<center><p><a href="../index.html"><img class="alignnone size-full wp-image-6443" src=".\image\17.jpg" alt="" width="236" height="39" /></a>                           <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\18.jpg" alt="" width="156" height="41" /></a></p></font></center>

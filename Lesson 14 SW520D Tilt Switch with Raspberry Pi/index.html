@@ -1,0 +1,281 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 14: SW520D Tilt Switch with Raspberry Pi</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 14: SW520D Tilt Switch with Raspberry Pi</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_14_SW520D_Tilt_Switch_with_Raspberry_Pi.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Experimental Principle</a></strong></li>
+<li><strong><a href="#5">SW520D Tilt Sensor Schematic</a></strong></li>
+<li><strong><a href="#6">Circuit Graph for each parts</a></strong></li>
+<li><strong><a href="#7">Connection Graph</a></strong></li>
+<li><strong><a href="#8">Software</a></strong></li>
+<li><strong><a href="#9">For C Language users</a></strong></li>
+<li><strong><a href="#10">C language code explanation</a></strong></li>
+<li><strong><a href="#9">For Python Language users</a></strong></li>
+<li><strong><a href="#10">Python language code explanation</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Introduction</strong><br />
+Tilt switch is a very useful sensor in many applications such  as mobile phone,drone(UAV) and gaming device . In this lesson, we use SW520D Tilt Sensor to make a tutorial experiment. When SW520D Sensor tilts, Raspberry Pi will make a LED flash.</p>
+<p><a id="2"></a><strong>Hardware Preparation</strong><br />
+1x Raspberry pi<br />
+1x SW520D<br />
+1x LED diode<br />
+1x Breadboard<br />
+1x 200Ω resistor<br />
+Jumper wires<br />
+1x T type GPIO Extension board with 40 pin cable (optional)</p>
+<p><a id="3"></a><strong>Software Preparation</strong><br />
+<strong>Note:</strong> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">lesson 1: getting started with raspberry pi</a>.</p>
+<p><a id="4"></a><strong>Experimental Principle</strong><br />
+SW520D tilt switch is a common ball tilt switch. It is composed of two conductive electrodes and metal ball. Two conductive electrodes and metal ball are sealed in the golden cover. As photo shown:<br />
+<center><img class="aligncenter" src=".\image\1.jpg" alt="" width="506" height="552" /></p></center>
+<p>SW520D tilt switch is soldered at a micro PCB board to form a tilt switch module. This module consist of sw520D tilt switch, potentiometer, 3 pins, power indicator and signal indicator (to indicate tilting  of tilt switch)<br />
+<center><img class="aligncenter" src=".\image\2.jpg" alt="" width="667" height="667" /></p></center>
+<p>The ball in the tilt-switch changes with different angle of inclination to trigger the circuit. When SW520D tilt switch is vertical, metal ball will touch with conductive electrode and trigger the circuit, so D0 of tilt module will output low level and signal indicator turn on. When tilt switch is tilted to some angle. metal ball break touch with conductive electrode and break circuit, and D0 of tilt module output high level and the signal indicator turn off. The principle diagram of the module is as shown below:<br />
+<center><img class="aligncenter" src=".\image\3.jpg" alt="" width="746" height="338" /></p></center>
+<p><a id="5"></a><strong>SW520D Tilt Sensor Schematic</strong><br />
+<center><img class="aligncenter" src=".\image\4.jpg" alt="" width="958" height="555" /></p></center>
+<p><a id="6"></a><strong>Circuit Graph for each parts</strong><br />
+<center><a href=".\image\5.jpg"><img class="aligncenter size-medium" src=".\image\5.jpg" width="658" height="462" /></a></p></center>
+<p><strong>*B5</strong> in above graph means BCM GPIO#5 or Physical pin#21 or wiringPi#21.</p>
+<p><strong>*B6</strong> in above graph means BCM GPIO#6 or Physical pin#22 or wiringPi#22</p>
+<p><strong>Note:</strong> B means BCM(Broadcom pin number). If you don’t know what is BCM pin#, Physical pin#, wiringPi#, please review our <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">lesson 2: Introduction Of Raspberry Pi GPIO</a></p>
+<p><a id="7"></a><strong>Connection Graph</strong></p>
+<center><p><a href=".\image\6.jpg"><img class="aligncenter size-large wp-image-8298" src=".\image\6.jpg" alt="" width="1024" height="436" /></a><a href=".\image\7.jpg"><img class="aligncenter size-large wp-image-8609" src=".\image\7.jpg" alt="" width="1024" height="576" /></a></p></center>
+<p><a id="8"></a><strong>Software</strong><br />
+There are two kind of common programming languages for raspberry pi. One is C which is similar to programming on Arduino, and the other is Python. In this lesson, we'll provide codes for both languages.  New starters can select one according to their interest or habit.</p>
+<p><a id="9"></a><strong>For C Language users</strong>，please follow the next steps:</p>
+<hr />
+<p>Please be sure installation wiringpi. If you have not installed wiringPi, read  <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html">installation wiringpi</a><br />
+<strong>Step 1</strong>) Download sw520d.c  by typing following commands in pi terminal:<br />
+<strong>pi@raspberry:~ $<span style="color: #ff00ff;"> cd ~</span></strong><br />
+<strong>pi@raspberry:~ $ </strong> <span style="color: #ff00ff;"><strong>sudo wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_14/sw520d.c</strong></span></p>
+<center><p><span style="color: #ff00ff;"><strong><a href=".\image\8.jpg"><img class="aligncenter size-large wp-image-8605" src=".\image\8.jpg" alt="" width="1024" height="367" /></a></strong></span><br /></center>
+*You can also use also use  nano editor to copy and paste code into sw529d.c by typing command<br />
+<strong><span style="color: #ff00ff;">sudo nano sw520d.c</span></strong></p>
+<center><p><strong><span style="color: #ff00ff;"><a href=".\image\9.jpg"><img class="aligncenter size-large wp-image-8606" src=".\image\9.jpg" alt="" width="1024" height="549" /></center></a></span></strong><br />
+Above command will use nano editor to open sw520d.c,  you can copy/paste following code  into nano editor and type Ctrl-x to save the code into file.</p>
+<pre class="easycode; title:;lang:;"> //Sample code of sw520d.c by osoyoo.com
+
+#include < wiringPi.h>
+#include < stdio.h>
+#define LedPin        22
+#define Sw520dPin 21
+int main(void)
+{
+      // When initialize wiring failed, print messageto screen
+      if(wiringPiSetup() == -1){
+            printf("setup wiringPi failed !");
+            return 1; 
+      }
+      pinMode(LedPin, OUTPUT);
+      pinMode(Sw520dPin,INPUT);
+
+      printf("\n");
+      printf("\n");
+      printf("========================================\n");
+      printf("|              LED alarm               |\n");
+      printf("|    ------------------------------    |\n");
+      printf("|        If SW520D tilt                |\n");
+      printf("|                                      |\n");
+      printf("|        LED will Blink                |\n");
+      printf("|                                      |\n");
+      printf("|                                OSOYOO|\n");
+      printf("========================================");
+      printf("\n");
+      printf("\n");
+      
+      while(1){
+            if(!(digitalRead(Sw520dPin))){
+            // LED off
+            digitalWrite(LedPin, HIGH);
+            printf("\n");
+            printf("-------------------|\n");
+            printf("|     Not tilt...  |\n");
+            printf("-------------------|\n");
+            printf("Not tilt...\n");
+            delay(1000);
+            }
+            else{
+            // LED blink
+            digitalWrite(LedPin, LOW);
+            delay(500);
+            digitalWrite(LedPin,HIGH);
+            delay(500);
+            printf("\n");
+            printf("===================|\n");
+            printf("|     tilting!     |\n");
+            printf("===================|\n");
+            }
+      }
+      return 0;
+}
+
+//end of sw520d.c</pre>
+<p><strong>Step 2)Compile Code</strong><br />
+C language is high level language. Before running the project, the code need to compile as an executable file. Please enter the following command:<br />
+<strong>pi@raspberry:~ $ </strong><span style="color: #ff00ff;"><strong>gcc -Wall -o sw520d sw520d.c -lwiringPi</strong></span></p>
+<p><span style="color: #ff0000;"><strong>Note:</strong> </span><br />
+<strong><span style="color: #ff00ff;">gcc: </span></strong>is GNU Compiler Collection. If you want to write your own C code and compile to run it, you need to master gcc.<br />
+<span style="color: #ff00ff;"><strong>-Wall:</strong></span> to get more error when compile the code<br />
+<span style="color: #ff00ff;"><strong>-o</strong></span>: to name the compiled file. You can name the file as your like. here <span style="color: #000000;">we name as sw520d </span><br />
+<span style="color: #ff00ff;"><strong>sw520d.c</strong><span style="color: #000000;">: means the original file which is compiled</span></span><br />
+<span style="color: #ff00ff;"><strong>-lwiringPi</strong></span><span style="color: #ff00ff;">:</span> is to load the library wiringPi (l is short for library)</p>
+<p><strong>Step 3) Run Project by typing following command in terminal</strong><br />
+<strong>pi@raspberry:~ $ </strong><span style="color: #ff00ff;"><strong>sudo ./sw520d</strong></span></p>
+<center><p><a href=".\image\10.jpg"><img class="aligncenter size-full wp-image-8607" src=".\image\10.jpg" alt="" width="846" height="814" /></a></p></center>
+<p><strong>Step 4) Test project result</strong><br />
+After running the project, your terminal will show print message as code, and then the sw520d D0 pin voltage will be sent to BCM#5(wPi#21). If the sw520d tilt switch is vertical, the LED won't blink and the terminal will show "not tilt". If the sw520d tilts at some angle, the LED will blink and the terminal will show "tilting".</p>
+<center><p><a href=".\image\11.jpg"><img class="aligncenter size-large wp-image-8608" src=".\image\11.jpg" alt="" width="1024" height="768" /></a></p></center>
+<p><a id="10"></a><strong>C language code explanation</strong></p>
+<pre class="easycode; title:;lang:;"> //include functions in wiringPi library such as digitalWrite,digitalread
+#include < wiringPi.h> 
+
+//include I/O functions in stdio library such as printf
+#include < stdio.h> //include 
+
+//Define LED and SW520d GPIO pin.
+
+#define LedPin    22
+#define Sw520dPin 21</pre>
+<p><span style="color: #ff0000;"><strong>Note:</strong> </span> You may be confused with LEDPin 22 and SW520D 21 in above C codes where are different from BCM numbering in previous Python lessons. This is because C uses wPi(wiringPi) numbering method. You can use the command <em>gpio readall</em> to compare BCM pin numbering and wPi numbering and their relation with Raspberry Pi physical pin location: <em>gpio readall</em> command result:</p>
+<center><p><img class="size-medium aligncenter" src=".\image\12.jpg" width="750" height="505" /></p></center>
+<p>Learn more about GPIO, <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">click here</a>:</p>
+<pre class="easycode; title:;lang:;"> // When initialize wiring failed, print message to screen
+
+  if(wiringPiSetup() == -1){
+    printf("setup wiringPi failed !");
+    return 1; 
+  }
+
+  //Define LedPin as output mode and Sw520dPin as input mode
+  pinMode(LedPin, OUTPUT);
+  pinMode(Sw520dPin,INPUT);
+
+</pre>
+<p>d)The first part of the following code means it will show as print message first. Go on while loop statement and conditions. The Sw520dPin level will be read again and again, when it is read as low level, it means tilt switch is vertical, and the screen will show "not tilt" and LED will not blink. When this pin is detected as high level, and it means tilt switch is tilting, and the screen will show "tilting" and LED will blink every 500ms(0.5s).</p>
+<pre class="easycode; title:;lang:;"> printf("\n");0
+  printf("\n");
+  printf("========================================\n");
+  printf("|              LED alarm               |\n");
+  printf("|    ------------------------------    |\n");
+  printf("|        If SW520D tilt                |\n");
+  printf("|                                      |\n");
+  printf("|        LED will Blink                |\n");
+  printf("|                                      |\n");
+  printf("|                                OSOYOO|\n");
+  printf("========================================");
+  printf("\n");
+  printf("\n");
+  
+  while(1){
+    if(!(digitalRead(Sw520dPin))){
+    // LED off
+    digitalWrite(LedPin, HIGH);
+    printf("\n");
+    printf("-------------------|\n");
+    printf("|     Not tilt...  |\n");
+    printf("-------------------|\n");
+    delay(1000);
+    }
+    else{
+    // LED blink
+    digitalWrite(LedPin, LOW);
+    delay(500);
+    digitalWrite(LedPin,HIGH);
+    delay(500);
+    printf("\n");
+    printf("===================|\n");
+    printf("|     tilting!     |\n");
+    printf("===================|\n");
+    }
+  }</pre>
+<p><a id="11"></a><strong>For Python Language users</strong>，please follow the next steps:</p>
+<hr />
+<p>Learn more about Python, please go to <a href="../Lesson 4 Python Light LED/index.html">Raspberry Pi Starter Kit lesson 4</a></p>
+<p><strong>Step 1) download  sw520d.c sample code by typing following command in Pi terminal</strong><br />
+<strong>pi@raspberry:~ $<span style="color: #ff00ff;"> cd ~</span></strong><br />
+<strong>pi@raspberry:~ $ </strong><span style="color: #ff00ff;"><strong>sudo wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_14/sw520d.py</strong></span></p>
+<center><p><a href=".\image\13.jpg"><img class="aligncenter size-large wp-image-8610" src=".\image\13.jpg" alt="" width="1024" height="365" /></a></p></center>
+<p><strong>Step 2) Run the python code by typing following command in Pi terminal</strong><br />
+<strong>pi@raspberry:~ $ </strong><span style="color: #ff00ff;"><strong>sudo python ./sw520d.py<br />
+</strong></span></p>
+<p>*Note: Unlike C, Python is a script language which can be executed without compiling. So we no need to compile <strong>sw520d.py </strong>source file before running it.</p>
+<center><p><a href=".\image\14.jpg"><img class="aligncenter size-full wp-image-8611" src=".\image\14.jpg" alt="" width="814" height="818" /></a></p></center>
+<p><strong>Step 3)Test project result</strong><br />
+After running the project, your terminal will show print message as code, and then the sw520d pin level will be read. If the sw520d tilt switch is vertical, the LED won't blink and the terminal will show "not tilt". If the sw520d tilts at some angle, the LED will blink and the terminal will show "tilting".</p>
+<center><p><a href=".\image\15.jpg"><img class="aligncenter size-large wp-image-8608" src=".\image\15.jpg" alt="" width="1024" height="768" /></a></p></center>
+<p><a id="12"><strong>Python language code explanation</a></strong><br />
+a) The following code is about the module when importing script, Import is a keyword at python language, and means import module.RPi.GPIO is a module to control Raspberry Pi GPIO channels for python. Time is a standard module for python. Delay Functions invokes this module.</p>
+<pre class="easycode; title:;lang:;">import RPi.GPIO as GPIO
+import time</pre>
+<p>b) Define LED and SW520d GPIO. In Python, GPIO use BCM numbering method which is different from wiringPi in C langugage, for detail about the difference, please  read <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">Lesson 2</a> .</p>
+<pre class="easycode; title:;lang:;"># set #6 as LED pin
+LedPin = 6
+# set #5 as SW520D Pin
+Sw520dPin = 5</pre>
+<p>c) Print_message() is a custom function and show print message on the terminal. Learn more information about function definition, please visit: <strong> https://www.tutorialspoint.com/python/python_functions.htm</strong>
+<pre class="easycode; title:;lang:;">#print message at the beginning ---custom function
+def print_message():
+    print ('==================================')
+    print ('|            LED Alarm           |')
+    print ('|        ----------------        |')
+    print ('|        If SW520D Tilt          |')
+    print ('|                                |')
+    print ('|        LED Will Blink          |')
+    print ('|        ----------------        |')
+    print ('|                                |')
+    print ('|                          OSOYOO|')
+    print ('==================================\n')
+    print ('Program is running...')
+    print ('Please press Ctrl+C to end the program...')</pre>
+<p>d) GPIO.setmode(GPIO.BCM) function sets up BCM numbering method as GPIO numbering method. GPIO.setup(LedPin,GPIO.OUT,initial=GPIO.HIGH) function sets up LedPin as output mode and set high level as LedPin's initial level . GPIO.setup(Sw520dPin,GPIO.IN) function sets up sw520d as input mode.</p>
+<pre class="easycode; title:;lang:;">#setup function for some setup---custom function
+def setup():
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    #set LedPin's mode to output,and initial level to HIGH(3.3V)
+    GPIO.setup(LedPin,GPIO.OUT,initial=GPIO.HIGH)
+    GPIO.setup(Sw520dPin,GPIO.IN)</pre>
+<p>e) Main function main() invokes print_message() function first, and the terminal will show the print message, and then go on while loop statement and conditions. The sw520d pin level will be read. If the pin level is read as high level, and it means tilt switch at the status of "tilting", and the terminal will show "tilting" and LED will blink every 0.5s(500ms). when it is read as low level, it means tilt switch at the status of "not tilt", and the terminal will show "not tilt" and LED will not blink.</p>
+<pre class="easycode; title:;lang:;">#main function
+def main():
+    #print info
+    print_message()
+    while True:
+        #read Sw520dPin's level
+        if(GPIO.input(Sw520dPin)):
+            GPIO.output(LedPin,GPIO.LOW)
+            time.sleep(0.5)
+            GPIO.output(LedPin,GPIO.HIGH)
+            time.sleep(0.5)
+            print ('********************')
+            print ('*     tilting!     *')
+            print ('********************')
+            print ('\n')
+        else:
+            GPIO.output(LedPin,GPIO.HIGH)
+            print ('====================')
+            print ('=     Not tilt...  =')
+            print ('====================')
+            print ('\n')
+            time.sleep(1)</pre>
+<center><a href="../Lesson 13 I2C 1602 LCD/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\16.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\17.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 15 Raspberry Pi, Potentiometer and LCD/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\18.jpg" alt="" width="156" height="41" /></a></font></center>

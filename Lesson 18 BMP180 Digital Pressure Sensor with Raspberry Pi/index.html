@@ -1,0 +1,437 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 18: BMP180 Digital Pressure Sensor with Raspberry Pi</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 18: BMP180 Digital Pressure Sensor with Raspberry Pi</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_18_BMP180_Digital_Pressure_Sensor_with_Raspberry_Pi.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Experimental Principle</a></strong></li>
+<li><strong><a href="#5">Schematic diagram:</a></strong></li>
+<li><strong><a href="#6">Hardware Setup</a></strong></li>
+<li><strong><a href="#7">Software</a></strong></li>
+<li><strong><a href="#8">For C language users</a></strong></li>
+<li><strong><a href="#9">For python users</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Introduction</strong><br />
+In this lesson, we'll teach you how to use Raspberry Pi read data from BMP180 digital pressure sensor.</p>
+<p><a id="2"></a><strong>Hardware Preparation</strong><br />
+1 * Raspberry Pi<br />
+1 * BMP180 digital pressure sensor<br />
+1 * Breadboard<br />
+Several jumper wires<br />
+1 * T-Extension Board with 40-Pin Cable(Optional)</p>
+<p><a id="3"></a><strong>Software Preparation</strong><br />
+<strong>Note:</strong> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">lesson 1: getting started with raspberry pi</a>.</p>
+<p><a id="4"></a><strong>Experimental Principle</strong><br />
+BMP180 digital pressure sensor can detect pressure, temperature and altitude. We will use Raspberry Pi to input these data from BMP180 sensor through II2 interface, and print the value in the terminal window.</p>
+<p><a id="5"></a><strong>Schematic diagram</strong></p>
+<p><strong><span style="color: #ff0000;">Note:</span></strong> Learn more about GPIO of raspberry pi, please review our <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">lesson 2: Introduction Of Raspberry Pi GPIO</a></p>
+<center><p><img class="aligncenter size-medium" src=".\image\1.jpg" width="778" height="583" /></p></center>
+<p><a id="6"></a><strong>Hardware Setup</strong><br />
+Assembling the Circuit as followed Connection Graph</p>
+<center><p><a href=".\image\2.jpg"><img class="aligncenter size-large wp-image-8327" src=".\image\2.jpg" alt="" width="1024" height="395" /></a></p></center>
+<center><p><a href=".\image\3.jpg"><img class="aligncenter size-large wp-image-9128" src=".\image\3.jpg" alt="" width="1024" height="576" /></a></p></center>
+<p><a id="7"></a><strong>Software</strong></p>
+<p>To use the I2C interface, we should enable the I2C first. Please enter the following command:</p>
+<p><strong>sudo  nano  /boot/config.txt</strong></p>
+<p>Open the file /boot/config.txt, find the code line"dtparam=i2c_arm"，checking if there is # sign in front of the line, uncomment it (remove the # in front of this line), and make sure the end of the line is"on", finally the code should look like this:</p>
+<center><p><img class="aligncenter size-medium" src=".\image\4.jpg" width="858" height="122" /><br /></center>
+Press Ctrl+X，and type "Y" to save the file you revised. reboot Pi.</p>
+<p>We’ll provide two kinds of codes for C language users and Python language users.</p>
+<p><a id="8"></a><strong>For C language users</strong>, please follow the next step:</p>
+<hr />
+<p>Please be sure installation wiringpi. If you have not installed wiringPi, read  <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html">lesson 3: installation wiringpi</a></p>
+<p>Step 1) Download and unzip the code</p>
+<p><strong>cd ~</strong><br />
+<strong>wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_18/bmp180-c.tar.gz</strong><br />
+<strong>sudo   tar  zxvf   bmp180-c</strong><strong>.tar.gz</strong></p>
+<center><p><a href=".\image\5.jpg"><img class="aligncenter size-large wp-image-9136" src=".\image\5.jpg" alt="" width="1024" height="468" /></a></p></center>
+<p>Step 2) Change the path<br />
+<strong>cd </strong>  <strong>bmp180-c</strong><br />
+<center><a href=".\image\6.jpg"><img class="aligncenter size-full wp-image-9138" src=".\image\6.jpg" alt="" width="647" height="75" /></a></p></center>
+<p>Step 3) Compile code<br />
+<strong>sudo gcc -Wall -o bmp180 bmp180test.c -lwiringPi -lm</strong></p>
+<p>Step 4) Run program<br />
+<strong>sudo  ./bmp180</strong><br />
+<strong>Program result</strong><br />
+Once the program starts running , the terminal will show pressure, temperature and altitude which BMP180 sensor detects.<br />
+<center><a href=".\image\7.jpg"><img class="aligncenter size-large wp-image-9142" src=".\image\7.jpg" alt="" width="1024" height="373" /></a></p></center>
+<p>bmp180.h and bmp180test.c Code</p>
+<pre class="easycode; title: bmp180.h;lang:;">#ifndef _BMP180_
+#define _BMP180_
+
+//i2c address
+#define BMP180_Address 0x77
+
+//Operating Modes
+#define BMP180_ULTRALOWPOWER    0
+#define BMP180_STANDARD         1
+#define BMP180_HIGHRES          2
+#define BMP180_ULTRAHIGHRES     3
+
+//BMP185 Registers
+#define BMP180_CAL_AC1          0xAA  //Calibration data (16 bits)
+#define BMP180_CAL_AC2          0xAC  //Calibration data (16 bits)
+#define BMP180_CAL_AC3          0xAE  //Calibration data (16 bits)
+#define BMP180_CAL_AC4          0xB0  //Calibration data (16 bits)
+#define BMP180_CAL_AC5          0xB2  //Calibration data (16 bits)
+#define BMP180_CAL_AC6          0xB4  //Calibration data (16 bits)
+#define BMP180_CAL_B1           0xB6  //Calibration data (16 bits)
+#define BMP180_CAL_B2           0xB8  //Calibration data (16 bits)
+#define BMP180_CAL_MB           0xBA  //Calibration data (16 bits)
+#define BMP180_CAL_MC           0xBC  //Calibration data (16 bits)
+#define BMP180_CAL_MD           0xBE  //Calibration data (16 bits)
+#define BMP180_CONTROL          0xF4
+#define BMP180_TEMPDATA         0xF6
+#define BMP180_PRESSUREDATA     0xF6
+
+//Commands
+#define BMP180_READTEMPCMD      0x2E
+#define BMP180_READPRESSURECMD  0x34
+
+#endif</pre>
+<pre class="easycode; title: bmp180test.c;lang:;">#include < wiringPi.h>
+#include < wiringPiI2C.h>
+#include < stdio.h>
+#include < math.h>
+#include "bmp180.h"
+
+#define OSS BMP180_STANDARD
+short AC1,AC2,AC3,B1,B2,MB,MC,MD;
+unsigned short AC4,AC5,AC6;
+int fd;
+char I2C_readByte(int reg)
+{
+    return (char)wiringPiI2CReadReg8(fd,reg);
+}
+
+unsigned short I2C_readU16(int reg)
+{
+    int MSB,LSB;
+    MSB = I2C_readByte(reg);
+    LSB = I2C_readByte(reg + 1);
+    int value = (MSB << 8) +LSB; return (unsigned short)value; } short I2C_readS16(int reg) { int result; result = I2C_readU16(reg); if (result > 32767)result -= 65536;
+    return (short)result;
+}
+void I2C_writeByte(int reg,int val)
+{
+    wiringPiI2CWriteReg8(fd,reg,val);
+}
+
+void load_calibration()
+{
+    AC1 = I2C_readS16(BMP180_CAL_AC1);
+    AC2 = I2C_readS16(BMP180_CAL_AC2);
+    AC3 = I2C_readS16(BMP180_CAL_AC3);
+    AC4 = I2C_readU16(BMP180_CAL_AC4);
+    AC5 = I2C_readU16(BMP180_CAL_AC5);
+    AC6 = I2C_readU16(BMP180_CAL_AC6);
+    B1  = I2C_readS16(BMP180_CAL_B1);
+    B2  = I2C_readS16(BMP180_CAL_B2);
+    MB  = I2C_readS16(BMP180_CAL_MB);
+    MC  = I2C_readS16(BMP180_CAL_MC);
+    MD  = I2C_readS16(BMP180_CAL_MD);
+}
+int read_raw_temp()
+{
+    int raw;
+    I2C_writeByte(BMP180_CONTROL,BMP180_READTEMPCMD);
+    delay(5);  //5ms;
+    raw = I2C_readByte(BMP180_TEMPDATA) << 8;
+    raw += I2C_readByte(BMP180_TEMPDATA+1);
+    return raw;
+
+}
+int read_raw_pressure()
+{
+    int MSB,LSB,XLSB,raw;
+    I2C_writeByte(BMP180_CONTROL,BMP180_READPRESSURECMD +(OSS << 6));
+    switch(OSS)
+    {
+        case BMP180_ULTRALOWPOWER:
+            delay(5);break;
+        case BMP180_HIGHRES:
+            delay(14);break;
+        case BMP180_ULTRAHIGHRES:
+            delay(26);break;
+        default :
+            delay(8);
+    }
+    MSB  = I2C_readByte(BMP180_PRESSUREDATA);
+    LSB  = I2C_readByte(BMP180_PRESSUREDATA + 1);
+    XLSB = I2C_readByte(BMP180_PRESSUREDATA + 2);
+    raw = ((MSB << 16) + (LSB << 8) + XLSB) >> (8 - OSS);
+    return raw;
+}
+float read_temperature()
+{
+    float T;
+    int UT,X1,X2,B5;
+    UT = read_raw_temp();
+    X1 = ((UT - AC6)*AC5) >> 15;
+    X2 = (MC << 11) / (X1 + MD); B5 = X1 + X2; T = ((B5 + 8) >> 4) /10.0;
+    return T;
+}
+
+int read_pressure()
+{
+    int P;
+    int UT,UP,X1,X2,X3,B3,B5,B6;
+    unsigned int B4;
+    int B7;
+    UT = read_raw_temp();
+    UP = read_raw_pressure();
+
+    X1 = ((UT - AC6)*AC5) >> 15;
+    X2 = (MC << 11) / (X1 + MD); B5 = X1 + X2; //Pressure Calculations B6 = B5 - 4000; X1 = (B2 * (B6 * B6) >> 12) >> 11;
+    X2 = (AC2 * B6) >> 11;
+    X3 = X1 + X2;
+    B3 = (((AC1 * 4 + X3) << OSS) + 2) / 4; X1 = (AC3 * B6) >> 13;
+    X2 = (B1 * ((B6 * B6) >> 12)) >> 16;
+    X3 = ((X1 + X2) + 2) >> 2;
+    B4 = (AC4 * (X3 + 32768)) >> 15;
+    B7 = (UP - B3) * (50000 >> OSS);
+    if (B7 < 0x80000000){P = (B7 * 2) / B4;} else {P = (B7 / B4) * 2;} X1 = (P >> 8) * (P >> 8);
+    X1 = (X1 * 3038) >> 16;
+    X2 = (-7357 * P) >> 16;
+    P = P + ((X1 + X2 + 3791) >> 4);
+    return P;
+
+}
+float read_altitude()
+{
+    float pressure,altitude;
+    float sealevel_pa = 101325.0;
+    pressure = (float)read_pressure();
+    altitude = 44330.0 * (1.0 - pow(pressure / sealevel_pa,(1.0/5.255)));
+    return altitude;
+}
+float read_sealevel_pressure()
+{
+    float altitude_m = 0.0;
+    float pressure,p0;
+    pressure =(float)read_pressure();
+    p0 = pressure / pow(1.0 - altitude_m/44330.0,5.255);
+    return p0;
+}
+int main(int argc,char **argv)
+{
+    printf("BMP180 Test Program ...\n");
+    if(wiringPiSetup() < 0) return 1;
+    fd = wiringPiI2CSetup(BMP180_Address);
+    load_calibration();
+    while(1)
+    {
+        printf("\nTemperature : %.2f C\n",read_temperature());
+        printf("Pressure :    %.2f Pa\n",read_pressure()/100.0);
+        printf("Altitude :    %.2f h\n",read_altitude());
+        delay(1000);
+    }
+    return 0;
+</pre>
+<p><a id="9"></a><strong>For python users</strong></p>
+<hr />
+<p>Learn more about Python, please go to <a href="../Lesson 4 Python Light LED/index.html">Raspberry Pi Starter Kit lesson 4</a></p>
+<p>1) Please install a python tool software (smbus) to communicate with IIC</p>
+<p><strong>cd  ~</strong></p>
+<p><strong>sudo apt-get install python-smbus</strong></p>
+<center><p><a href=".\image\8.jpg"><img class="aligncenter size-large wp-image-9143" src=".\image\8.jpg" alt="" width="1024" height="222" /></a></p></center>
+<p>2) Download and unzip the code</p>
+<p><strong>cd  ~</strong></p>
+<p><strong>wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_18/bmp180-python.tar.gz</strong></p>
+<p><strong>sudo  tar zxvf  bmp180-python.tar.gz</strong></p>
+<center><p><a href=".\image\9.jpg"><img class="aligncenter size-large wp-image-9144" src=".\image\9.jpg" alt="" width="1024" height="481" /></a></p></center>
+<p>3) Change the path</p>
+<p><strong>cd  bmp180-python<br />
+</strong></p>
+<center><p><a href=".\image\10.jpg"><img class="aligncenter size-full wp-image-9146" src=".\image\10.jpg" alt="" width="766" height="79" /></a></p></center>
+<p>4) Run program</p>
+<p><strong>sudo  python  ./BMP180test.py</strong></p>
+<p>5) Program result</p>
+<p>Once the program starts running , the terminal will show pressure, temperature and altitude which BMP180 sensor detects.</p>
+<center><p><a href=".\image\11.jpg"><img class="aligncenter size-large wp-image-9147" src=".\image\11.jpg" alt="" width="1024" height="498" /></a></p></center>
+<p>BMP180.py, BMP180.pyc and BMP180test.py code</p>
+<pre class="easycode; title: BMP180.py;lang:;">import time
+import smbus
+ 
+# BMP085 default address.
+BMP180_I2CADDR           = 0x77
+ 
+# Operating Modes
+BMP180_ULTRALOWPOWER     = 0
+BMP180_STANDARD          = 1
+BMP180_HIGHRES           = 2
+BMP180_ULTRAHIGHRES      = 3
+ 
+# BMP085 Registers
+BMP180_CAL_AC1           = 0xAA  # R   Calibration data (16 bits)
+BMP180_CAL_AC2           = 0xAC  # R   Calibration data (16 bits)
+BMP180_CAL_AC3           = 0xAE  # R   Calibration data (16 bits)
+BMP180_CAL_AC4           = 0xB0  # R   Calibration data (16 bits)
+BMP180_CAL_AC5           = 0xB2  # R   Calibration data (16 bits)
+BMP180_CAL_AC6           = 0xB4  # R   Calibration data (16 bits)
+BMP180_CAL_B1            = 0xB6  # R   Calibration data (16 bits)
+BMP180_CAL_B2            = 0xB8  # R   Calibration data (16 bits)
+BMP180_CAL_MB            = 0xBA  # R   Calibration data (16 bits)
+BMP180_CAL_MC            = 0xBC  # R   Calibration data (16 bits)
+BMP180_CAL_MD            = 0xBE  # R   Calibration data (16 bits)
+BMP180_CONTROL           = 0xF4
+BMP180_TEMPDATA          = 0xF6
+BMP180_PRESSUREDATA      = 0xF6
+ 
+# Commands
+BMP180_READTEMPCMD       = 0x2E
+BMP180_READPRESSURECMD   = 0x34
+ 
+ 
+class BMP180(object):
+    def __init__(self, address=BMP180_I2CADDR, mode=BMP180_STANDARD):
+        self._mode = mode
+        self._address = address
+        self._bus = smbus.SMBus(1)
+        # Load calibration values.
+        self._load_calibration()
+    def _read_byte(self,cmd):
+        return self._bus.read_byte_data(self._address,cmd)
+ 
+    def _read_u16(self,cmd):
+        MSB = self._bus.read_byte_data(self._address,cmd)
+        LSB = self._bus.read_byte_data(self._address,cmd+1)
+        return (MSB << 8) + LSB def _read_s16(self,cmd): result = self._read_u16(cmd) if result > 32767:result -= 65536
+        return result
+ 
+    def _write_byte(self,cmd,val):
+        self._bus.write_byte_data(self._address,cmd,val)
+ 
+    def _load_calibration(self):
+        "load calibration"
+        self.cal_AC1 = self._read_s16(BMP180_CAL_AC1)   # INT16
+        self.cal_AC2 = self._read_s16(BMP180_CAL_AC2)   # INT16
+        self.cal_AC3 = self._read_s16(BMP180_CAL_AC3)   # INT16
+        self.cal_AC4 = self._read_u16(BMP180_CAL_AC4)   # UINT16
+        self.cal_AC5 = self._read_u16(BMP180_CAL_AC5)   # UINT16
+        self.cal_AC6 = self._read_u16(BMP180_CAL_AC6)   # UINT16
+        self.cal_B1  = self._read_s16(BMP180_CAL_B1)     # INT16
+        self.cal_B2  = self._read_s16(BMP180_CAL_B2)     # INT16
+        self.cal_MB  = self._read_s16(BMP180_CAL_MB)     # INT16
+        self.cal_MC  = self._read_s16(BMP180_CAL_MC)     # INT16
+        self.cal_MD  = self._read_s16(BMP180_CAL_MD)     # INT16
+ 
+    def read_raw_temp(self):
+        """Reads the raw (uncompensated) temperature from the sensor."""
+        self._write_byte(BMP180_CONTROL, BMP180_READTEMPCMD)
+        time.sleep(0.005)  # Wait 5ms
+        MSB = self._read_byte(BMP180_TEMPDATA)
+        LSB = self._read_byte(BMP180_TEMPDATA+1)
+        raw = (MSB << 8) + LSB
+        return raw
+ 
+    def read_raw_pressure(self):
+        """Reads the raw (uncompensated) pressure level from the sensor."""
+        self._write_byte(BMP180_CONTROL, BMP180_READPRESSURECMD + (self._mode << 6))
+        if self._mode == BMP180_ULTRALOWPOWER:
+            time.sleep(0.005)
+        elif self._mode == BMP180_HIGHRES:
+            time.sleep(0.014)
+        elif self._mode == BMP180_ULTRAHIGHRES:
+            time.sleep(0.026)
+        else:
+            time.sleep(0.008)
+        MSB = self._read_byte(BMP180_PRESSUREDATA)
+        LSB = self._read_byte(BMP180_PRESSUREDATA+1)
+        XLSB = self._read_byte(BMP180_PRESSUREDATA+2)
+        raw = ((MSB << 16) + (LSB << 8) + XLSB) >> (8 - self._mode)
+        return raw
+ 
+    def read_temperature(self):
+        """Gets the compensated temperature in degrees celsius."""
+        UT = self.read_raw_temp()
+ 
+        X1 = ((UT - self.cal_AC6) * self.cal_AC5) >> 15
+        X2 = (self.cal_MC << 11) / (X1 + self.cal_MD) B5 = X1 + X2 temp = ((B5 + 8) >> 4) / 10.0
+        return temp
+ 
+    def read_pressure(self):
+        """Gets the compensated pressure in Pascals."""
+        UT = self.read_raw_temp()
+        UP = self.read_raw_pressure()
+ 
+ 
+        X1 = ((UT - self.cal_AC6) * self.cal_AC5) >> 15
+        X2 = (self.cal_MC << 11) / (X1 + self.cal_MD) B5 = X1 + X2 # Pressure Calculations B6 = B5 - 4000 X1 = (self.cal_B2 * (B6 * B6) >> 12) >> 11
+        X2 = (self.cal_AC2 * B6) >> 11
+        X3 = X1 + X2
+        B3 = (((self.cal_AC1 * 4 + X3) << self._mode) + 2) / 4 X1 = (self.cal_AC3 * B6) >> 13
+        X2 = (self.cal_B1 * ((B6 * B6) >> 12)) >> 16
+        X3 = ((X1 + X2) + 2) >> 2
+        B4 = (self.cal_AC4 * (X3 + 32768)) >> 15
+        B7 = (UP - B3) * (50000 >> self._mode)
+ 
+        if B7 < 0x80000000: p = (B7 * 2) / B4 else: p = (B7 / B4) * 2 X1 = (p >> 8) * (p >> 8)
+        X1 = (X1 * 3038) >> 16
+        X2 = (-7357 * p) >> 16
+ 
+        p = p + ((X1 + X2 + 3791) >> 4)
+        return p
+ 
+    def read_altitude(self, sealevel_pa=101325.0):
+        """Calculates the altitude in meters."""
+        # Calculation taken straight from section 3.6 of the datasheet.
+        pressure = float(self.read_pressure())
+        altitude = 44330.0 * (1.0 - pow(pressure / sealevel_pa, (1.0/5.255)))
+        return altitude
+ 
+    def read_sealevel_pressure(self, altitude_m=0.0):
+        """Calculates the pressure at sealevel when given a known altitude in
+        meters. Returns a value in Pascals."""
+        pressure = float(self.read_pressure())
+        p0 = pressure / pow(1.0 - altitude_m/44330.0, 5.255)
+        return p0</pre>
+<pre class="easycode; title: BMP180test.py;lang:;">import time
+from BMP180 import BMP180
+ 
+# Initialise the BMP085 and use STANDARD mode (default value)
+# bmp = BMP085(0x77, debug=True)
+bmp = BMP180()
+ 
+# To specify a different operating mode, uncomment one of the following:
+# bmp = BMP085(0x77, 0)  # ULTRALOWPOWER Mode
+# bmp = BMP085(0x77, 1)  # STANDARD Mode
+# bmp = BMP085(0x77, 2)  # HIRES Mode
+# bmp = BMP085(0x77, 3)  # ULTRAHIRES Mode
+while True:
+    temp = bmp.read_temperature()
+ 
+# Read the current barometric pressure level
+    pressure = bmp.read_pressure()
+ 
+# To calculate altitude based on an estimated mean sea level pressure
+# (1013.25 hPa) call the function as follows, but this won't be very accurate
+    altitude = bmp.read_altitude()
+ 
+# To specify a more accurate altitude, enter the correct mean sea level
+# pressure level.  For example, if the current pressure level is 1023.50 hPa
+# enter 102350 since we include two decimal places in the integer value
+# altitude = bmp.readAltitude(102350)
+ 
+    print "Temperature: %.2f C" % temp
+    print "Pressure:    %.2f hPa" % (pressure / 100.0)
+    print "Altitude:     %.2f\n" % altitude
+time.sleep(2)</pre>
+<center><a href="../Lesson 17 Raspberry Pi Works with DHT11 Temperature and Humidity Module/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\12.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\13.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 19 IR Remote with Raspberry Pi/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\14.jpg" alt="" width="156" height="41" /></a></font></center>

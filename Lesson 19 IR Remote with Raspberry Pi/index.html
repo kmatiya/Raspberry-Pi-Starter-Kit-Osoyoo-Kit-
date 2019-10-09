@@ -1,0 +1,329 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 19：IR Remote with Raspberry Pi</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 19：IR Remote with Raspberry Pi</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_19_IR_Remote_with_Raspberry_Pi.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Experimental Principle</a></strong></li>
+<li><strong><a href="#5">Schematic diagram of VS1838B with raspberry pi</a></strong></li>
+<li><strong><a href="#6">Hardware Setup</a></strong></li>
+<li><strong><a href="#7">Software</a></strong></li>
+<li><strong><a href="#8">Compile program to control LED via remote</a></strong></li>
+<li><strong><a href="#9">For C language users</a></strong></li>
+<li><strong><a href="#10">C language code Analysis</a></strong></li>
+<li><strong><a href="#11">For python users</a></strong></li>
+<li><strong><a href="#12">Python Code Explanation</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Introduction</strong><br />
+1)In this lesson, we'll introduce how to decode infrared signals with raspberry pi and remote 3 LEDs with IR remote.<br/>2)When the remote controller can't work, please connect your raspberry Pi with Ethernet cable
+</p>
+<p><a id="2"></a><strong>Hardware Preparation</strong><br />
+1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * IR Receiver(VS1838B)<br />
+1 * Infrared Remote Controller<br />
+3 * LED<br />
+3* <span id="result_box" class="short_text" lang="en"><span class="">Resistor</span></span>（200Ω）<br />
+Several jumper wires<br />
+1 * T-Extension Board with 40-Pin Cable(Optional)</p>
+<p><a id="3"></a><strong>Software Preparation</strong><br />
+<span style="color: #ff0000;"><strong>Note:</strong></span> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">lesson 1: getting started with raspberry pi</a>.<br/>2. When the remote controller can't work, please connect your raspberry Pi with Ethernet cable
+</p>
+<p><a id="4"></a><strong>Experimental Principle</strong><br />
+<span class="" lang="zh-CN"><span class="">In this lesson, we use VS1838B IR receiver which can convert incoming IR signal into digital data output. as photo shows:</span></span></p>
+<center><p><img class="aligncenter size-medium" src=".\image\1.jpg" width="400" /></p></center>
+<p><a id="5"></a><strong>Schematic diagram of VS1838B with raspberry pi</strong>:<br />
+Note: Learn more about GPIO of raspberry pi, please review our lesson 2: <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html" target="_blank" rel="noopener noreferrer">Introduction Of Raspberry Pi GPIO</a><br />
+<center><img class="aligncenter size-medium" src=".\image\2.jpg" width="891" height="408" /></p></center>
+<p><a id="6"></a><strong>Hardware Setup</strong><br />
+<center><a href=".\image\3.jpg"><img class="aligncenter size-large wp-image-8675" src=".\image\3.jpg" alt="" width="1024" height="461" /></a></p></center>
+<p><a id="7"></a><strong>Software</strong><br />
+Install LIRC（Linux Infrared remote control），LIRC is a package that allows you to decode infrared signals of many (but not all) commonly used remote controls. LIRC runs as a daemon that will decode IR signals received by the device drivers and provide the information on a socket. We will then write a program in the user space to monitor this socket for input events using the LIRC client library. To learn more about LIRC, please visit <strong>http://www.lirc.org</strong></p>
+<p>1) Install LIRC and client libraries by typing following command in terminal<br />
+<strong>sudo apt-get install lirc liblircclient-dev</strong></p>
+<p>2)Set LIRC<br />
+a) Run the following command to edit /etc/modules<br />
+<strong>sudo  nano /etc/modules</strong></p>
+<p>Add the following lines in /etc/modules, and then press "ctrl" + "X" and then press "y" to save the file, at last, press "enter" to exit<br />
+<strong>lirc_dev</strong><br />
+<strong>lirc_rpi gpio_in_pin=18 gpio_out_pin=17</strong><br />
+<center><a href=".\image\4.jpg"><img class="aligncenter size-full wp-image-8676" src=".\image\4.jpg" alt="" width="891" height="484" /></a></p></center>
+<p>b) Run the following command to edit /boot/config.txt<br />
+<strong>sudo  nano  /boot/config.txt</strong></p>
+<p>Add the follow line at the end of the file,  and then press "ctrl" + "X" and then press "y" to save the file, at last, press "enter" to exit<br />
+<strong>dtoverlay=lirc-rpi:gpio_in_pin=18 gpio_out_pin=17</strong><br />
+<center><a href=".\image\5.jpg"><img class="aligncenter size-full wp-image-8677" src=".\image\5.jpg" alt="" width="851" height="233" /></a></p></center>
+<p>c) Run the following command to edit <code>/etc/lirc/hardware.conf</code> :<br />
+<strong>sudo nano</strong><code><strong> /etc/lirc/hardware.conf</strong><br />
+</code></p>
+<p>Please revise the text as the second photo:<br />
+The First Photo</p>
+<center><p><a href=".\image\6.jpg"><img class="aligncenter size-full wp-image-8678" src=".\image\6.jpg" alt="" width="819" height="557" /></a></center>
+The second photo<br />
+<center><a href=".\image\7.jpg"><img class="aligncenter size-full wp-image-8679" src=".\image\7.jpg" alt="" width="874" height="587" /></a></p></center>
+<p>d) Download (remote configuration file)lircd.conf to specified direction<br />
+<strong>cd ~</strong><br />
+<strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_19/lircd.conf</strong><br />
+<strong>sudo cp lircd.conf /etc/lirc/</strong></p>
+<p>e) Run reboot to reboot raspberry pi to make the software be available<br />
+<strong>reboot</strong><br />
+<center><a href=".\image\8.jpg"><img class="aligncenter size-large wp-image-8692" src=".\image\8.jpg" alt="" width="1024" height="305" /></a></p></center>
+<p>3) Test IR receiver<br />
+a. Run the following command to check whether lirc is loaded or not<br />
+<strong>ls /dev/li*</strong></p>
+<p>If lirc is loaded, the terminal will show as following:<br />
+<center><img class="aligncenter size-medium" src=".\image\9.jpg" width="854" height="88" /><br /></center>
+If it isn't loaded, please check the setups.</p>
+<p>b.Run the following command to check whether the keys of remote controller works or not<br />
+<strong>sudo /etc/init.d/lirc restart<br />
+irw</strong></p>
+<center><p><a href=".\image\10.jpg"><img class="aligncenter size-full wp-image-8682" src=".\image\10.jpg" alt="" width="1019" height="152" /></a><br /></center>
+If you get the error as the above photo, please run the following command again.<br />
+<strong>sudo /etc/init.d/lirc restart</strong></p>
+<p><strong>irw</strong></p>
+<p>And then press any key of controller and the terminal will show as the following photo:<br />
+<center><img class="aligncenter size-medium" src=".\image\11.jpg" width="727" height="469" /></p></center>
+<p>If it doesn't show as above, Please check the setup.</p>
+<p><a id="8"></a><strong>Compile program</strong><br />
+In this lesson, we’ll provide codes of C language and Python language. New starters can select one according to their interest or habit.</p>
+<p><a id="9"></a><strong>For C language users</strong></p>
+<hr />
+<p>Please be sure installation wiringpi. If you have not installed wiringPi, read  <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html">installation wiringpi</a></p>
+<p><strong>Step 1</strong>) Download <strong>IRtest.c</strong> by typing following commands in pi terminal:<br />
+<strong>cd ~</strong><br />
+<strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_19/IRtest.c</strong></p>
+<center><p><strong><a href=".\image\12.jpg"><img class="aligncenter size-large wp-image-8681" src=".\image\12.jpg" alt="" width="1024" height="354" /></a></strong></p></center>
+<p><strong>Note: </strong>You can also use also use  nano editor to copy and paste code into IRtest.c by typing command:<br />
+<strong>sudo nano IRtest.c</strong></p>
+<p>Step 2 Compile Code<br />
+<strong>sudo gcc -Wall -o IRtest IRtest.c -lwiringPi -llirc_client</strong><br />
+<center><a href=".\image\13.jpg"><img class="aligncenter size-large wp-image-8683" src=".\image\13.jpg" alt="" width="1024" height="150" /></a></p></center>
+<p>Step 3 Before running the file, please create a lircrc file at the path of /etc/lirc/, or you will get back error message.<br />
+<strong>sudo touch /etc/lirc/lircrc</strong></p>
+<p>4) Run program<br />
+<strong>sudo /etc/init.d/lirc restart</strong><br />
+<strong>sudo ./IRtest </strong><br />
+<center><a href=".\image\23.jpg"><img class="aligncenter size-full wp-image-8684" src=".\image\23.jpg" alt="" width="1013" height="187" /></a></p></center>
+<p>If you get the error as the above photo, please run the following command again.<br />
+<strong>sudo /etc/init.d/lirc restart</strong><br />
+<strong>sudo ./IRtest<br />
+</strong></p>
+<p>And then press <strong>key 1, key 2, key 3</strong> of controller to turn 3 leds on or off  and the terminal will show as the following photo:<br />
+<center><a href=".\image\14.jpg"><img class="aligncenter size-large wp-image-8685" src=".\image\14.jpg" alt="" width="1024" height="370" /></center>
+</a>Press ctrl +c to stop the program</p>
+<p>5) <strong>Test project result</strong><br />
+Once the program is running, when you press key 1 of remote controller, the first LED will switch between ON and OFF. When you press key 2, or key 3, the second and third LED will do the same thing.<br />
+<center><a href=".\image\15.jpg"><img class="aligncenter size-large wp-image-9134" src=".\image\15.jpg" alt="" width="1024" height="576" /></a></p></center>
+<p><a id="10"></a><strong>C language code Analysis</strong></p>
+<pre class="easycode; title: IRtest.c;lang:;">#include < wiringPi.h>
+#include < errno.h>
+#include < stdio.h>
+#include < stdlib.h>
+#include < string.h>
+#include < lirc/lirc_client.h>
+#include < time.h>
+ 
+void flipLED (int led);
+ 
+//The WiringPi pin numbers used by our LEDs
+#define LED1 4
+#define LED2 5
+#define LED3 6
+ 
+#define ON 1
+#define OFF 0
+ 
+int main(int argc, char *argv[])
+{
+        struct lirc_config *config;
+ 
+        //Timer for our buttons
+        int buttonTimer = millis();
+ 
+        char *code;
+        char *c;
+ 
+        //Initiate WiringPi and set WiringPi pins 4, 5 & 6 (GPIO 23, 24 & 25) to output. These are the pins the LEDs are connected to.
+        if (wiringPiSetup () == -1)
+            exit (1) ;
+ 
+        pinMode (LED1, OUTPUT);
+        pinMode (LED2, OUTPUT);
+        pinMode (LED3, OUTPUT);
+ 
+        //Initiate LIRC. Exit on failure
+        if(lirc_init("lirc",1)==-1)
+                exit(EXIT_FAILURE);
+ 
+        //Read the default LIRC config at /etc/lirc/lircd.conf  This is the config for your remote.
+        if(lirc_readconfig(NULL,&config,NULL)==0)
+        {
+                //Do stuff while LIRC socket is open  0=open  -1=closed.
+                while(lirc_nextcode(&code)==0)
+                {
+                        //If code = NULL, meaning nothing was returned from LIRC socket,
+                        //then skip lines below and start while loop again.
+                        if(code==NULL) continue;{
+                                //Make sure there is a 400ms gap before detecting button presses.
+                                if (millis() - buttonTimer  > 400){
+                                        //Check to see if the string "KEY_1" appears anywhere within the string 'code'.
+                                        if(strstr (code,"KEY_1")){
+                                                printf("MATCH on KEY_1\n");
+                                                flipLED(LED1);
+                                                buttonTimer = millis();
+                                        }
+                                        else if(strstr (code,"KEY_2")){
+                                                printf("MATCH on KEY_2\n");
+                                                flipLED(LED2);
+                                                buttonTimer = millis();
+                                        }
+                                        else if(strstr (code,"KEY_3")){
+                                                printf("MATCH on KEY_3\n");
+                                                flipLED(LED3);
+                                                buttonTimer = millis();
+                                        }
+                                }
+                        }
+                        //Need to free up code before the next loop
+                        free(code);
+                }
+                //Frees the data structures associated with config.
+                lirc_freeconfig(config);
+        }
+        //lirc_deinit() closes the connection to lircd and does some internal clean-up stuff.
+        lirc_deinit();
+        exit(EXIT_SUCCESS);
+}
+ 
+void flipLED (int led)
+{
+        //If LED is on, turn it off. Otherwise it is off, so thefore we need to turn it on.
+        if(digitalRead(led)==ON)
+                digitalWrite(led, OFF);
+        else
+                digitalWrite(led, ON);
+}</pre>
+<p><a id="11"></a><strong>For python users</strong></p>
+<hr />
+<p>Learn more about Python, please go to <a href="../Lesson 4 Python Light LED/index.html">Raspberry Pi Starter Kit lesson 4</a></p>
+<p>Step 1) Download <strong>IRtest1.py</strong>, <strong>IRtest2.py</strong> and <strong>IRtest3 .py</strong> sample code by typing following command in Pi terminal<br />
+<strong>cd ~</strong><br />
+<strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_19/IRtest1.py</strong><br />
+<strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_19/IRtest2.py</strong><br />
+<strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_19/IRtest3.py</strong></p>
+<center><p><a href=".\image\16.jpg"><img class="aligncenter size-large wp-image-8686" src=".\image\16.jpg" alt="" width="1024" height="345" /></a></p></center>
+<p><strong>Note: </strong>You can also use nano editor to copy and paste code into <strong>IRtest1.py</strong>,  <strong>IRtest2.py</strong>, <strong>IRtest3.py</strong> by typing command:<br />
+<strong>sudo nano IRtest1.py</strong><br />
+<strong>sudo nano IRtest2.py</strong><br />
+<strong>sudo nano IRtest3.py</strong></p>
+<p>2) please create a <strong>.lircrc</strong> file at the path of /home/pi<br />
+<strong>cd ~</strong><br />
+<strong>sudo nano ./.lircrc</strong></p>
+<p>Copy the following code and paste in <strong>.lircrc</strong>, and then press "ctrl" + "x", and then press "y" to save the file, and then press "enter" to exit.</p>
+<pre class="easycode; title: .lircrc;lang:;">#terminal runs irexec command when you press button 1 /home/pi/IRtest1 will be executed
+begin   
+    prog = irexec
+    button = KEY_1
+    config = sudo python /home/pi/IRtest1.py
+end
+begin   #terminal runs irexec command when you press button 2 /home/pi/IRtest2 will be executed
+    prog = irexec
+    button = KEY_2
+    config = sudo python /home/pi/IRtest2.py
+end
+begin  #terminal runs irexec command when you press button 3 /home/pi/IRtest3 will be executed
+    prog = irexec
+    button = KEY_3
+    config = sudo python /home/pi/IRtest3.py
+end</pre>
+<p>Or run the following command to download the <strong>.lircrc </strong>file</p>
+<p><strong>wget http://osoyoo/driver/pi3_start_learning_kit_lesson_19/.lircrc</strong></p>
+<p>3) Run program<br />
+<strong>sudo /etc/init.d/lirc restart</strong><br />
+<strong>irexec</strong></p>
+<center><p><a href=".\image\17.jpg"><img class="aligncenter size-full wp-image-8687" src=".\image\17.jpg" alt="" width="1017" height="188" /></a></p></center>
+<p>If you get the error as the above photo, please run the following command again.<br />
+<strong>sudo /etc/init.d/lirc restart</strong><br />
+<strong>irexec</strong></p>
+<p>And then press <strong>key 1, key 2, key 3</strong> of controller to turn 3 leds on or off  but the terminal will show nothing:<br />
+<center><a href=".\image\18.jpg"><img class="aligncenter size-large wp-image-8688" src=".\image\18.jpg" alt="" width="1024" height="191" /></a></p></center>
+<p>4) Program result<br />
+Once the program is running, when you press 1 of remote controller at IR receiver, the first LED will turn off if it is on, or the first LED will turn on if it is off. when you press 2, and 3, you will see the second LED and third LED as the same.<br />
+<center><a href=".\image\19.jpg"><img class="aligncenter size-large wp-image-9134" src=".\image\19.jpg" alt="" width="1024" height="576" /></a></p></center>
+<p><a id="12"></a><strong>Python Code Explanation:</strong></p>
+<p><em>irexec</em> executable file is a program which comes with LIRC package. When <em>irexec</em> starts running, it will look up key events handling program in <em> .lircrc  </em>file.  In this example, <em>.lircrc </em>defined that KEY_1 event will be handled by python program /home/pi/IRtest1.py , KEY_2 by /home/pi/IRtest2.py, and KEY_3 by /home/pi/IRtest3.py  . The details of these 3 python program are as following:</p>
+<p><strong>IRtest1.py</strong>,</p>
+<pre class="easycode; title: IRtest1.py;lang:;">"""
+$      If KEY_1 is pressed,this script will be executed,LED1 will turn on(or off)
+$      LED1 connect to GPIO5(BCM_GPIO 24)
+"""
+import RPi.GPIO as GPIO
+
+PIN = 24
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+GPIO.setup(PIN, GPIO.IN)
+GPIO.setup(PIN, GPIO.OUT)
+
+if GPIO.input(PIN) == 0:
+     GPIO.output(PIN, GPIO.HIGH)
+else:
+     GPIO.output(PIN, GPIO.LOW)</pre>
+<p><strong>IRtest2.py</strong></p>
+<pre class="easycode; title: IRtest2.py;lang:;">"""
+$      If KEY_2 is pressed,this script will be executed,LED1 will turn on(or off)
+$      LED2 connect to GPIO6(BCM_GPIO 25)
+"""
+import RPi.GPIO as GPIO
+
+PIN = 25
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+GPIO.setup(PIN, GPIO.IN)
+GPIO.setup(PIN, GPIO.OUT)
+
+if GPIO.input(PIN) == 0:
+     GPIO.output(PIN, GPIO.HIGH)
+else:
+     GPIO.output(PIN, GPIO.LOW)</pre>
+<p><strong>IRtest3.py</strong></p>
+<pre class="easycode; title: IRtest3.py;lang:;">"""
+$      If KEY_3 is pressed,this script will be executed,LED1 will turn on(or off)
+$      LED3 connect to GPIO7(BCM_GPIO 4)
+"""
+import RPi.GPIO as GPIO
+
+PIN = 4
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+GPIO.setup(PIN, GPIO.IN)
+GPIO.setup(PIN, GPIO.OUT)
+
+if GPIO.input(PIN) == 0:
+     GPIO.output(PIN, GPIO.HIGH)
+else:
+     GPIO.output(PIN, GPIO.LOW)</pre>
+<center><a href="../Lesson 18 BMP180 Digital Pressure Sensor with Raspberry Pi/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\20.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\21.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 20 Use Raspberry Pi + IR Remote to Control Other Devices/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\22.jpg" alt="" width="156" height="41" /></a></font></center>

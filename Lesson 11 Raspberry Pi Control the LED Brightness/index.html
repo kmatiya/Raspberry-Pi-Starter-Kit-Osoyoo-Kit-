@@ -1,0 +1,315 @@
+﻿<html>
+<head>
+<title>Lesson 11: Raspberry Pi Control the LED Brightness</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 11: Raspberry Pi Control the LED Brightness</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_11_Raspberry_Pi_control_the_LED_brightness.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Overview</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Work Principle</a></strong></li>
+<li><strong><a href="#5">Hardware Setup</a></strong></li>
+<li><strong><a href="#6">Software</a></strong></li>
+<li><strong><a href="#7">For C language users</a></strong></li>
+<li><strong><a href="#8">For python users</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Overview</strong></p>
+<p>In the lesson, we'll show how to using mcp3008 to read Photo-resistor (light sensor) data and control the led brightness.</p>
+<p><a id="2"></a><b>Hardware</b><strong> Preparation</strong></p>
+<p>1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * 10K resistor<br />
+1 * Photo-resistor<br />
+1 * LED<br />
+Jumper wires<br />
+1 * T-Extension Board<br />
+1 * 40-Pin Cable</p>
+<p><a id="3"></a><b>Software Preparation</b><br />
+Please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">Getting started for raspberry pi</a></p>
+<p><a id="4"></a><strong>Work Principle</strong></p>
+<p> A photoresistor is a light-controlled variable resistor. The resistance of a photoresistor decreases with increasing light intensity. For more information, please visit:<a href="https://en.wikipedia.org/wiki/Photoresistor"> https://en.wikipedia.org/wiki/Photoresistor</a></p>
+<p>In this project we use MCP3008 ADC to read the photoresistor voltage value which changes with light. the MCP3008 convert the analog voltage  value to digital signal(binary value) and sent it to the Pi. Then Pi changes PWM input value to control the LED brightness.<br />
+<strong>Circuit Graph:</strong></p>
+<p><center><img class="aligncenter size-medium" src=".\image\1.jpg" width="813" height="626" /></center></p>
+<p><a id="5"></a><strong><br />
+Hardware Setup</strong></p>
+<p><center><img class="aligncenter size-medium" src=".\image\2.jpg" width="1145" height="657" /></center></p>
+<p><a id="6"></a><strong>Sample code</strong></p>
+<p>we’ll provide two kinds of codes for C language users and Python language users.</p>
+<p><a id="7"></a><strong>For C language users ,please take following steps:</strong></p>
+<hr />
+<p>Note: If you have not installed wiringPi library. Please install it as per our <a href="http://osoyoo.com/2017/06/22/intall-wiringpi/">Lesson 3</a></p>
+<p>1)  Download the sample code from osoyoo by typing the following command:</p>
+<p><span style="color: #ff00ff;"><strong>cd   ~</strong></span></p>
+<p><span style="color: #ff00ff;"><strong>sudo  sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_11/lightsensor.c </strong></span></p>
+<p><a href=".\image\3.jpg"><center><img class="wp-image-8121 size-full aligncenter" src=".\image\3.jpg" alt="" width="687" height="242" /></center></a></p>
+<p><strong>Note:<br />
+</strong>If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:<strong><br />
+</strong><span style="color: #ff00ff;"><strong>sudo nano  lightsensor.c</strong></span></p>
+<p><strong>2</strong>)  Compile Code</p>
+<p><span style="color: #ff00ff;"><strong>gcc  -Wall  -o  lightsensor  lightsensor.c  -lwiringPi</strong></span></p>
+<p>3) Run program</p>
+<p>A)Before running the program, check MOSI, MISO, SCLK(B10, B9, B11) work mode is ALT0(alternative functions) by typing terminal command:<strong>gpio  readall</strong> If the mode is not ALTO, Please running the terminal command as followed:</p>
+<p><strong>gpio  -g  mode  9    alt0</strong></p>
+<p><strong>gpio  -g  mode  10   alt0</strong></p>
+<p><strong>gpio  -g  mode   11   alt0</strong></p>
+<p><center><img class="aligncenter size-medium" src=".\image\4.jpg" width="865" height="588" /></center></p>
+<p>B) Run the program</p>
+<p><span style="color: #ff00ff;"><strong>sudo  ./lightsensor</strong></span></p>
+<p><a href=".\image\5.jpg"><center><img class="wp-image-8119 size-full aligncenter" src=".\image\5.jpg" alt="" width="679" height="543" /></center></a></p>
+<p><strong>4) Test Result</strong></p>
+<p>When program is executed, the terminal will show print message as code firstly，then show the photoresistor ADC value(voltage). when the photoresistor is shaded， the LED brightness will increase, when  photoresistor is unshaded, the LED brightness will decrease.</p>
+<p><strong>Sample Code and </strong><b>Explanation comments</b></p>
+<pre class="easycode; title:;lang:;">#include < unistd.h >
+#include < stdint.h >
+#include < string.h >
+#include < errno.h >
+#include < wiringPi.h >
+#include < stdio.h > 
+#include < stdlib.h >
+#include < wiringPiSPI.h >
+
+//pin 1(BCM GPIO 18) is PWM  port
+#define  LEDPIN   1
+//binary number 1000 (decimal 8) is analog channel prefix
+#define CHAN_CONFIG_SINGLE  8
+
+//About SPI channel, read http://osoyoo.com/?p=7612
+//since B8 connect to CS/SHDN pin, we need select SPI Channel to 0
+#define SPICHANNEL          0 
+
+//our light sensor connect to MCP3008 CH0, we set annanalog channel to 0
+#define ANALOGCHANNEL       0
+static int myFd ;
+
+void spiSetup (int spiChannel)
+{
+    if ((myFd = wiringPiSPISetup (spiChannel, 10000)) < 0)
+    {
+        fprintf (stderr, "Can't open the SPI bus: %s\n", strerror (errno)) ;
+        exit (EXIT_FAILURE) ;
+    }
+}
+
+int myAnalogRead(int spiChannel,int channelConfig,int analogChannel)
+{
+    if(analogChannel7)
+        return -1;
+    unsigned char buffer[3] = {1}; // start bit
+    buffer[1] = (channelConfig+analogChannel) << 4;
+    wiringPiSPIDataRW(spiChannel, buffer, 3);
+    return ( (buffer[1] & 3 ) << 8 ) + buffer[2]; // get last 10 bits
+}
+
+void print_info()
+{
+    printf("\n");
+    printf("|************************************|\n");
+    printf("|        MCP3008 read lightsensor    |\n");
+    printf("|       -------------------------    |\n");
+    printf("|       | ADC |           | Pi  |    |\n");
+    printf("|       |-----|-----------|-----|    |\n");
+    printf("|       | CS  | connect to| CE0 |    |\n");
+    printf("|       | Din | connect to| MOSI|    |\n");
+    printf("|       | Dout| connect to| MISO|    |\n");
+    printf("|       | CLK | connect to| SCLK|    |\n");
+    printf("|       | CH0 | connect to| 3.3V|    |\n");
+    printf("|       | CH1 | connect to| GND |    |\n");
+    printf("|************************************|\n");
+    printf("|          LED connect to GPIO1      |\n");
+    printf("|                              OSOYOO|\n");
+    printf("|************************************|\n");
+    printf("\n");
+
+} 
+
+int main()
+{
+  int adc;
+  if(wiringPiSetup()<0)
+    {
+      printf("setup wiringPi failed!\n");
+            printf("please check your setup\n");
+            exit(1);
+    } 
+  spiSetup(SPICHANNEL);
+  pinMode(LEDPIN,PWM_OUTPUT); 
+  print_info();
+  
+  for(;;)
+  {
+      //read voltage value from analog CH0 pin data from SPI channel 0
+      adc = myAnalogRead(SPICHANNEL,CHAN_CONFIG_SINGLE,ANALOGCHANNEL);
+            printf("ADC = %d\n",adc);
+      //adc is a value between 0 to 1023, 1023 means max vref value 3.3V
+      pwmWrite(LEDPIN,1023-adc);
+      delay(1000);
+  }
+  
+}
+
+  for(;;)
+  {
+      adc = myAnalogRead(SPICHANNEL,CHAN_CONFIG_SINGLE,ANALOGCHANNEL);
+            printf("ADC = %d\n",adc);
+      //USE pwmWrite function defined in  to control LED brightness
+      pwmWrite(LEDPIN,1023-adc);
+      delay(1000);
+  }
+
+</pre>
+<p><a id="8"></a><strong>For python user,please take following steps:</strong></p>
+<hr />
+<p>When programming with Python language , normally we use GPIO library called <strong>RPi.GPIO </strong>which comes with Rasbian Jessie OS.<br />
+Click <a href="http://osoyoo.com/2017/06/22/intall-wiringpi/">here </a>to get more info about RPI.GPIO and Python.</p>
+<p>1)  download the sample code from osoyoo by typing following commands:</p>
+<p><strong><span style="color: #ff00ff;">cd  ~</span></strong></p>
+<p><strong><span style="color: #ff00ff;">sudo   wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_11/lightsensor.py</span></strong></p>
+<p><a href=".\image\6.jpg"><center><img class="alignnone wp-image-8123 size-large" src=".\image\6.jpg" alt="" width="1024" height="145" /></center></a></p>
+<p><strong>Note:<br />
+</strong>If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:</p>
+<p><strong><span style="color: #ff00ff;">sudo nano  lightsensor.py</span></strong></p>
+<p>2)Run the program by typing following command:</p>
+<p><span style="color: #ff00ff;"><strong>sudo  python  ./lightsensor.py</strong></span></p>
+<p><a href=".\image\7.jpg"><center><img class="wp-image-8125 size-full aligncenter" src=".\image\7.jpg" alt="" width="613" height="628" /></center></a></p>
+<p><strong>3) Running result</strong></p>
+<p>Once run the program, the terminal will show print message as code firstly, then show the lightsensor AD value. when you cover the Photoresistor, the LED brightness will increase, when increase incident light intensity on Photoresistor, the LED brightness will decrease.</p>
+<p><strong>Python Sample Code and </strong><b>Explanation comments</b></p>
+<pre class="easycode; title:;lang:;">import time
+import os
+import RPi.GPIO as GPIO
+
+# change these as desired - they're the pins connected from the
+# SPI port on the ADC to the Cobbler
+SPICLK = 11
+SPIMISO = 9
+SPIMOSI = 10
+SPICS = 8
+#set BCM_GPIO 18(GPIO1) as LED pin
+LEDPIN = 18
+
+analogChannel = 0
+
+#setup function for some setup---custom function
+def setup():
+    global p
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    # set up the SPI interface pins
+    GPIO.setup(SPIMOSI, GPIO.OUT)
+    GPIO.setup(SPIMISO, GPIO.IN)
+    GPIO.setup(SPICLK, GPIO.OUT)
+    GPIO.setup(SPICS, GPIO.OUT)
+    #set all LedPin's mode to output,and initial level to HIGH(3.3V)
+    GPIO.setup(LEDPIN,GPIO.OUT,initial=GPIO.LOW)
+    #set LEDPIN as PWM output,and frequency=100Hz
+    p = GPIO.PWM(LEDPIN,100)
+    #set p begin with ualue 0
+    p.start(0)
+    pass
+
+    
+#print message at the begining ---custom function
+def print_message():
+    print ('|**********************************|')
+    print ('|   MCP3008 read lightsensor   |')
+    print ('|   -----------------------------  |')
+    print ('|    | ADC |           | Pi  |     |')
+    print ('|    |-----|-----------|-----|     |')
+    print ('|    | CS  | connect to| CE0 |     |')
+    print ('|    | Din | connect to| MOSI|     |')
+    print ('|    | Dout| connect to| MISO|     |')
+    print ('|    | CLK | connect to| SCLK|     |')
+    print ('|    | CH0 | connect to| 3.3V|     |')
+    print ('|    | CH1 | connect to| GND |     |')
+    print ('| ********************************** |')
+    print (' LED connect to GPIO1')
+    print ('|                            OSOYOO|')
+    print ('|**********************************|\n')
+    print ('Program is running...')
+    print ('Please press Ctrl+C to end the program...')
+
+# read SPI data from MCP3008 chip, 8 possible adc's (0 thru 7)
+def readadc(adcnum, clockpin, mosipin, misopin, cspin):
+        if ((adcnum > 7) or (adcnum < 0)):
+                return -1
+        GPIO.output(cspin, True)
+
+        GPIO.output(clockpin, False)  # start clock low
+        GPIO.output(cspin, False)     # bring CS low
+
+        commandout = adcnum
+        commandout |= 0x18  # start bit + single-ended bit
+        commandout <<= 3    # we only need to send 5 bits here
+        for i in range(5):
+                if (commandout & 0x80):
+                        GPIO.output(mosipin, True)
+                else:
+                        GPIO.output(mosipin, False)
+                commandout <<= 1
+                GPIO.output(clockpin, True)
+                GPIO.output(clockpin, False)
+
+        adcout = 0
+        # read in one empty bit, one null bit and 10 ADC bits
+        for i in range(12):
+                GPIO.output(clockpin, True)
+                GPIO.output(clockpin, False)
+                adcout <<= 1 if (GPIO.input(misopin)): adcout |= 0x1 GPIO.output(cspin, True) adcout >>= 1       # first bit is 'null' so drop it
+        return adcout
+
+#main function
+def main():
+    while True:
+        #print info
+        print_message()
+        adc = readadc(analogChannel, SPICLK, SPIMOSI, SPIMISO, SPICS)
+        print ('LightSensor ADC = %d'%(adc))
+        adc=(1023-adc)*100/1023
+        p.ChangeDutyCycle(int(adc))
+        time.sleep(1)
+
+#define a destroy function for clean up everything after the script finished
+def destroy():
+    #stop p
+    p.stop()
+    #turn off led
+    GPIO.output(LEDPIN,GPIO.LOW)
+    #release resource
+    GPIO.cleanup()
+    
+#
+# if run this script directly ,do:
+if __name__ == '__main__':
+    setup()
+    try:
+            main()
+    #when 'Ctrl+C' is pressed,child program destroy() will be executed.
+    except KeyboardInterrupt:
+        destroy()
+
+        adc=(1023-adc)*100/1023
+        p.ChangeDutyCycle(int(adc))</pre>
+<center><h2><a href="../Lesson 10 Raspberry Pi SPI Ports/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\8.jpg" alt=".\image\10.jpg" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\9.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 12 Raspberry Pi Drive SG90 Servo/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\10.jpg" alt="" width="156" height="41" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

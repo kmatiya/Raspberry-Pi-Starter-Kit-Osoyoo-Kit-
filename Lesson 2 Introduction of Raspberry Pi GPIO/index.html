@@ -1,0 +1,74 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 2: Introduction of Raspberry Pi GPIO</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 2: Introduction of Raspberry Pi GPIO</h1>
+<ul>
+<li><strong><a href="#1">Introduction</a></strong></li>
+<li><strong><a href="#2">GPIO Pin Name System BCM/Wiringpi and their relation with physical pin location</a></strong></li>
+<li><strong><a href="#3">BCM Pin name system</a></strong></li>
+<li><strong><a href="#4">wiringPi GPIO Naming system:</a></strong></li>
+<li><strong><a href="#5">Enlarged BCM pin map relation with Physical pin location No.</a></strong></li>
+<li><strong><a href="#6">T Type 40-pin GPIO Extension Board</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Introduction</strong><br />
+The Raspberry Pi is a credit card-sized minicomputer with a pre-installed Linux system. As for ports, the Raspberry Pi provides ports for mouse and keyboard. In addition, there are also ports for SD card and HDMI display or TV’s connection. Being low cost and low consumption, the Raspberry Pi is very suitable to do very complicated embedded projects through its powerful GPIO pins.</p>
+<p>GPIO (General-purpose input/output) are hardware pins rows which locate in the top of RPi board. Raspberry Pi use  GPIO pins to interact with other hardware including sensors, motors, and many many other peripheral devices.</p>
+<p>Through this kit, you will learn how to use the GPIOs to make simple experiments and how to program GPIO.</p>
+<p>The Raspberry Pi evolves through many versions including the latest (so far) Raspberry Pi Zero W, Pi 3 Model B, Pi 2 model B, Pi 1 Model B+, Pi Zero, and Pi 1 Model A+. Different version might different GPIO layout.</p>
+<p>In this tutorial, our default Pi board is  RPI 3 model B which supports Bluetooth and Wi-Fi. You can choose according to actual needs. The following is a photo for RPI3 Model B and Pi Zero:</p>
+<center><p><img src=".\image\1.jpg" alt="" /></p></center>
+<center><p><img src=".\image\2.jpg" alt="" /></p></center>
+<p><a id="2"></a><strong>GPIO Pin Name System BCM/Wiringpi and their relation with physical pin location: </strong></p>
+<p>There are no pins printed on the latest Raspberry Pi, which may cause difficulties for beginners.<br />
+To make thing worse, there are actually two major GPIO naming systems: <strong>BCM</strong> which is often used in python language, and <strong>wiringPi</strong> which is often used in C language.  Same physical pin with different number  has confused many novice learners. So let's start to figure it out.</p>
+<p>1)The relation between Raspberry Pi official GPIO and physical location:<br />
+In following graph, the number in the circle is the physical pin location , the word beside the pin is the <strong>official</strong> name of the GPIO pin. For example, The Official name of the pin in location 12 (in <span style="color: #0000ff;">blue circle</span> of following picture) is "GPIO 18".</p>
+<center><p><img src=".\image\3.jpg" alt="" /></p></center>
+<p><a id="3"></a><strong>BCM Pin name system:</strong><br />
+The Official name of a GPIO pin normally matches BCM pin number. For example, Physical Pin 12 (inside <span style="color: #0000ff;">blue circle</span> of above picture) official name is GPIO 18 , in BCM system is pin# 18. If you use Python to program this pin, the sample code should be like following:</p>
+<pre>import RPi.GPIO as GPIO
+LedPin = 18
+GPIO.output(LEDPIN,GPIO.HIGH)
+......
+</pre>
+<p><a id="4"></a><strong>wiringPi GPIO Naming system:</strong><br />
+wiringPi library is often used in C programming. pin name/number in wiringPi is quite different from that of BCM(Raspberry official naming system).<br />
+For example, pin in physical  location 12(in <span style="color: #0000ff;">blue circle</span> of above picture)  is called GPIO# <strong>18</strong>(or <strong>GPIO 18</strong>) in BCM, however, in wiringPi, its name is<strong> GPIO. 1</strong> or pin# <strong>1</strong>.  If you use C to program this pin, the sample code should be like following:</p>
+<pre>#include < wiringPi.h>
+#define LedPin 1
+pinMode(LedPin, OUTPUT);
+......
+</pre>
+<p>By running console command <strong>gpio readall</strong>, you can get wiringPi  name,number and its relations to BCM(GPIO official name) numbers as following:<br />
+<center><img src=".\image\4.jpg" alt="" /></p></center>
+<p><a id="5"></a><strong>Enlarged BCM pin map relation with Physical pin location No.</strong><br />
+<center><img src=".\image\5.jpg" alt="" width="700" height="700" /></p></center>
+<ul>
+<li><b>GPIO</b> are your standard pins that simply be used to turn devices on and off. For example, a LED.</li>
+<li><strong>I2C</strong> (Inter-Integrated Circuit) pins allow you to connect and talk to hardware modules that support this protocol (I2C Protocol). This will typically take up 2 pins. Please visit: <strong>https://en.wikipedia.org/wiki/I%C2%B2C</strong> to learn more about 12C</li>
+<li><strong>SPI</strong> (Serial Peripheral Interface Bus) pins can be used to connect and talk to SPI devices. Pretty much the same as I2C but makes use of a different protocol. Please visit: <strong>https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus</strong> to learn more about SPI</li>
+<li><strong>UART</strong> (Universal asynchronous receiver/transmitter) are the serial pins used to communicate with other devices. Please visit: <strong>https://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter</strong> to learn more about UART</li>
+<li><strong>DNC</strong> stands for do not connect, this is pretty self-explanatory.</li>
+<li>The <strong>power pins</strong> pull power directly from the Raspberry Pi.</li>
+<li><strong>GND </strong>are the pins you use to ground your devices. It doesn’t matter which pin you use as they are all connected to the same line.</li>
+</ul>
+<p><a id="6"></a><strong>T Type 40-pin GPIO Extension Board</strong><br />
+The function of the extension board is to lead out pins of the Raspberry Pi to breadboard by GPIO Extension Board to avoid GPIO damage caused by frequent plugging in or out. For plugging convenience,the kit includes T-Shape GPIO Extension Board with 40 GPIO flat cable<br />
+<center><img src=".\image\6.jpg" alt="" width="700" height="595" /></p></center>
+<p>This 40-pin GPIO Extension Board and GPIO cable can be plugged into Raspberry Pi board as per following graph, take Raspberry Pi Zero and Raspberry Pi 3 as example<br />
+<center><img src=".\image\7.jpg" alt="" width="700" height="262" /></p></center>
+<center><img src=".\image\8.jpg" alt="" width="700" height="262" /></p></center>
+<p>For your better understanding of every pins, we have drawn a table for you to understand relation between the Name printed in T board , BCM# and wiringPi#<br />
+<center><img src=".\image\9.jpg" alt="" width="700" height="700" /></p></center>
+<center><a href="../Lesson 1 Get Started with Raspberry Pi/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\10.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\11.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\12.jpg" alt="" width="156" height="41" /></a></center></font>

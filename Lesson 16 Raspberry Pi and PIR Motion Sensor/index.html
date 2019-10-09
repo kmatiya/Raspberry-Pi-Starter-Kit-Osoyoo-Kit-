@@ -1,0 +1,202 @@
+﻿<html>
+<head>
+<title>Lesson 16: Raspberry Pi and PIR Motion Sensor</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 16: Raspberry Pi and PIR Motion Sensor</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_16_Raspberry_Pi_and_PIR_motion_sensor.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Overview</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Work Principle</a></strong></li>
+<li><strong><a href="#5">Hardware Setup</a></strong></li>
+<li><strong><a href="#7">For C language users</a></strong></li>
+<li><strong><a href="#8">For python users</a></strong></li>
+</ul>
+<p><a id="1"><strong>Overview</strong></a></p>
+<p>In this lesson, we'll introduce how to use Raspberry Pi to drive PIR motion Sensor(Human Body Pyroelectric Infrared Sensor)  and make an alarm system.</p>
+<p><a id="2"><strong>Hardware Preparation:</strong></a></p>
+<p>1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * buzzer<br />
+1 * PIR motion sensor<br />
+Some jumper wires</p>
+<p><a id="3"><strong>Software Preparation</strong></a></p>
+<p><strong>Note:</strong> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">Getting started for raspberry pi</a></p>
+<p><a id="4"><strong>Work Principle</strong></a></p>
+<p><span id="result_box" class="short_text" lang="zh-CN"><span class="">Passive infrared sensor (PIR motion sensor) is an electronic sensor that detects changes in the amount of infrared (IR) radiating from objects within certain distance.  The sensor converts the   incoming infrared radiation into voltage signal.<br />
+The PIR Sensor detection range is 8-12um and human body temperature radiates about 10um IR.  So PIR Sensor is often used to detect human motion in alarm system.</span></span></p>
+<p><center><img class="aligncenter size-medium" src=".\image\1.jpg" width="954" height="438" /></center></p>
+<p>The PIR sensor in this projects has 3 pins (VCC, OUT, GND), 2 potentiometers (one for sensitivity adjustment and another for time delay adjustment) as showed in following picture.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\2.jpg" width="519" height="454" /></center></p>
+<p><a id="5"><strong>Hardware Setup</strong></a></p>
+<p>Wiring up the PIR sensor and a buzzer to the Pi as following connection graph.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\3.jpg" width="580" height="491" /></center></p>
+<p><center><<a href=".\image\4.jpg"><center><img class="aligncenter wp-image-8577 size-large" src=".\image\4.jpg" alt="" width="1024" height="770" /></center></a></center></p>
+<p><strong>Sample code</strong></p>
+<p><strong>For <span id="result_box" class="short_text" lang="en"><span class="">C language</span></span> user, please take steps as followed:</strong></p>
+<hr />
+<p><a id="7">1) Download the C sample code by typing following terminal command:</a></p>
+<p><span style="color: #ff00ff;"><strong>cd   ~</strong></span><br />
+<span style="color: #ff00ff;"><strong>sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_16/pirsensor.c</strong></span></p>
+<p><a href=".\image\5.jpg"><center><img class="aligncenter wp-image-8230 size-large" src=".\image\5.jpg" alt="" width="1024" height="359" /></center></a>Note: If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:<br />
+<strong><span style="color: #ff00ff;">sudo nano  pirsensor.c</span></strong></p>
+<p><strong>2)Compile code</strong><br />
+<span style="color: #ff00ff;"><strong>gcc  -Wall  -o pirsensor  pirsensor.c  -lwiringPi</strong></span></p>
+<p><strong>4) Run the program</strong><br />
+<span style="color: #ff00ff;"><strong>sudo  ./pirsensor</strong></span></p>
+<p><strong><center><a href=".\image\6.jpg"><img class="aligncenter wp-image-8231 size-full" src=".\image\6.jpg" alt="" width="976" height="457" /></a></center></strong>
+<p><strong>5) Running result</strong><br />
+Once the program starts running, the terminal will show print message as per program. If you move in front of the Raspberry PI PIR sensor, then it should make the piezo buzzer beep. When you go away, then the buzzer stop beeping.</p>
+<p><strong>C language sample Code </strong><b>Analysis</b></p>
+<pre class="easycode; title:;lang:;">#include < wiringPi.h>
+#include < stdio.h>
+#include < stdlib.h>
+
+#define BuzzerPin    1 //output buzzer signal to wiringPi pin#1(BCM#18)
+#define PIRPin       0 //input PIR sensor signalfrom wiringPi pin#0(BCM#17)
+
+int main(void)
+{
+// When initialize wiring failed, print messageto screen
+if(wiringPiSetup() == -1){
+printf("setup wiringPi failed !");
+exit(1);
+}
+
+pinMode(BuzzerPin, OUTPUT);
+pinMode(PIRPin,INPUT);
+
+printf("\n");
+printf("========================================\n");
+printf("|              Alarm                   |\n");
+printf("|    ------------------------------    |\n");
+printf("|        PIR connect to wPi#0          |\n");
+printf("|                                      |\n");
+printf("|        Buzzer connect to wPi#1       |\n");
+printf("|                                      |\n");
+printf("|                                OSOYOO|\n");
+printf("========================================\n");
+printf("\n");
+
+while(1){
+if(!(digitalRead(PIRPin))){
+digitalWrite(BuzzerPin, HIGH);
+printf("\n");
+printf("-------------------|\n");
+printf("|    no alarm...   |\n");
+printf("-------------------|\n");
+delay(1000);
+}
+else{
+digitalWrite(BuzzerPin, LOW);
+delay(500);
+printf("\n");
+printf("===================|\n");
+printf("|      alarm...    |\n");
+printf("===================|\n");
+}
+}
+
+return 0;
+}</pre>
+<hr />
+<p><a id="8">for python user, please take steps as followed:</a></p>
+<p>1) Download the Python sample code by typing following command:</p>
+<p><strong><span style="color: #ff00ff;">cd  ~</span></strong></p>
+<p><strong><span style="color: #ff00ff;">sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_16/pirsensor.py</span></strong></p>
+<p><strong><center><a href=".\image\7.jpg"><img class="aligncenter wp-image-8232 size-large" src=".\image\7.jpg" alt="" width="1024" height="355" /></a></center>2)Run the program</strong><br />
+<span style="color: #ff00ff;"><strong>sudo  python  ./pirsensor.py</strong></span></p>
+<p><strong><a href=".\image\8.jpg"><center><img class="aligncenter wp-image-8580 size-full" src=".\image\8.jpg" alt="" width="862" height="602" /></center></a>3) Running result</strong><br />
+Once program starts running, the terminal will show print message. If you move in front of the Raspberry PI PIR sensor, it should make the piezo buzzer beep. When you go away,  the buzzer will stop beeping.</p>
+<p><strong>Python Sample Code Analysis:</strong></p>
+<pre class="easycode; title:;lang:;">import RPi.GPIO as GPIO
+import time
+
+# set BCM_GPIO 17(wPi#0) as PIR pin
+PIRPin = 17
+# set BCM_GPIO 18(wPi#1) as buzzer pin
+BuzzerPin = 18
+
+#print message at the begining ---custom function
+def print_message():
+print ('==================================')
+print ('|              Alarm             |')
+print ('|     -----------------------    |')
+print ('|     PIR connect to GPIO0       |')
+print ('|                                |')
+print ('|     Buzzer connect to GPIO1    |')
+print ('|     ------------------------   |')
+print ('|                                |')
+print ('|                          OSOYOO|')
+print ('==================================\n')
+print ('Program is running...')
+print ('Please press Ctrl+C to end the program...')
+
+#setup function for some setup---custom function
+def setup():
+GPIO.setwarnings(False)
+#set the gpio modes to BCM numbering
+GPIO.setmode(GPIO.BCM)
+#set BuzzerPin's mode to output,and initial level to HIGH(3.3V)
+GPIO.setup(BuzzerPin,GPIO.OUT,initial=GPIO.HIGH)
+GPIO.setup(PIRPin,GPIO.IN)
+
+#main function
+def main():
+#print info
+print_message()
+while True:
+#read Sw520dPin's level
+if(GPIO.input(PIRPin)!=0):
+GPIO.output(BuzzerPin,GPIO.LOW)
+#time.sleep(0.5)
+print ('********************')
+print ('*     alarm!     *')
+print ('********************')
+print ('\n')
+time.sleep(1)
+else:
+GPIO.output(BuzzerPin,GPIO.HIGH)
+print ('====================')
+print ('=     Not alarm...  =')
+print ('====================')
+print ('\n')
+time.sleep(1)
+#define a destroy function for clean up everything after the script finished
+def destroy():
+#turn off buzzer
+GPIO.output(BuzzerPin,GPIO.HIGH)
+#release resource
+GPIO.cleanup()
+#
+# if run this script directly ,do:
+if __name__ == '__main__':
+setup()
+try:
+main()
+#when 'Ctrl+C' is pressed,child program destroy() will be executed.
+except KeyboardInterrupt:
+destroy()
+pass</pre>
+<center><h2><a href="../Lesson 15 Raspberry Pi, Potentiometer and LCD/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\9.jpg" alt=".\image\9.jpg" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\10.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 17 Raspberry Pi Works with DHT11 Temperature and Humidity Module/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\11.jpg" alt="" width="156" height="41" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

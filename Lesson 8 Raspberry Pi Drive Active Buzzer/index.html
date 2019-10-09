@@ -1,0 +1,146 @@
+﻿<html>
+<head>
+<title>Raspberry Pi3 Starter Kit Lesson 8: Raspberry Pi Drive Active Buzzer</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 8: Raspberry Pi Drive Active Buzzer</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_8_Raspberry_Pi_drive_Active_Buzzer.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Overview</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Work Principle</a></strong></li>
+<li><strong><a href="#5">Hardware Setup</a></strong></li>
+<li><strong><a href="#6">Software</a></strong></li>
+<li><strong><a href="#7">For C language users</a></strong></li>
+<li><strong><a href="#8">For python users</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Overview</strong><br />
+In this lesson, we'll learn how to drive active buzzer using Raspberry Pi.</p>
+<p><a id="2"></a><strong>Hareware Preparation</strong></p>
+<p>1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * Buzzer<br />
+Jumper wires<br />
+1 * T-Extension Board<br />
+1 * 40-Pin Cable</p>
+<p><a id="3"></a><strong>Software Preparation</strong><br />
+Please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">Lesson 1 Getting started for raspberry pi</a></p>
+<p><a id="4"></a><strong>Work principle</strong><br />
+There are active buzzer and passive buzzer, then what's the difference between active and passive buzzer?  there is an  oscillator in active buzzer, it make a noise when connected to a DC power supply. The passive one may just be a bare transducer, and must be driven by a pulsed voltage to make a noise. In this project we use active buzzer. the long lead of Buzzer is positive electrode(anode), the short lead is negative electrode(cathode)</p>
+<p><a href=".\image\1.jpg"><center><br />
+<img class="aligncenter size-medium" src=".\image\1.jpg" width="776" height="627" /></a></p>
+<p><a id="5"></center></a><strong>Hareware Setup</strong></p>
+<p>Assembling the Circuit as following Connection Graph,  negative electrode to Raspberry Pi GPIO1(BCM_GPIO 18), Positive electrode to 3.3V</p>
+<p><center><img class="aligncenter size-medium" src=".\image\2.jpg" width="718" height="474" /></center></p>
+<p><strong> </strong></p>
+<p><span style="color: #ff00ff;"><a href=".\image\3.jpg"><center><img class="wp-image-7804 size-large aligncenter" src=".\image\3.jpg" alt="" width="1024" height="422" /></center></a></span></p>
+<p><strong><a href=".\image\4.jpg"><center><img class="wp-image-7828 size-full aligncenter" src=".\image\4.jpg" alt="" width="1000" height="750" /></center></a></strong></p>
+<p><a id="6"></a><strong>Sample Code:</strong></p>
+<p>we’ll provide two kinds of codes for C language users and Python language users.</p>
+<p><a id="7"></a><strong>For C Language users, please take following steps:</strong></p>
+<hr />
+<p>Firstly, Please make sure the wiringPi library is installed, if you don’t know how to install it, please visit:<a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html
+">Lesson 3: Prepare GPIO tool-WiringPi utility</a></p>
+<p><strong>Step 1</strong>)  Download breathing_led.c sample code by typing following command:</p>
+<p><span style="color: #ff00ff;"><strong>cd  ~</strong></span><br />
+<span style="color: #ff00ff;"><strong>sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_8/buzzer.c</strong></span></p>
+<p><a href=".\image\5.jpg"><center><img class="wp-image-7806 size-full aligncenter" src=".\image\5.jpg" alt="" width="816" height="237" /></center></a></p>
+<p><strong>Step 2</strong>)  Compile Code</p>
+<p>C language is high level language. Before running the project, the code need to compile as an executable file. Please enter the following command:<br />
+<span style="color: #ff00ff;"><strong>gcc  -Wall  -o buzzer  buzzer.c  -lwiringPi</strong></span><br />
+<strong>Note: gcc: </strong>is GNU Compiler Collection. If you want to write your own C code and compile to run it, you need to master gcc. for more information about gcc, please visit <a href="https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html">https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html</a><br />
+<strong>-Wall:</strong> to get more error when compile the code<br />
+<strong>-o</strong>: to name the compiled file. You can name the file as your like. here we name as buzzer<br />
+<strong>buzzer.c</strong>: means the original file which is compiled<br />
+<strong>-lwiringPi</strong>: is to load the library wiringPi (l is short for library)</p>
+<p><strong>Step 3) </strong>Run the Program by typing following command in terminal:</p>
+<p><span style="color: #ff00ff;"><strong>sudo  ./buzzer</strong></span></p>
+<p><a href=".\image\6.jpg"><center><img class="wp-image-7807 size-full aligncenter" src=".\image\6.jpg" alt="" width="784" height="291" /></center></a></p>
+<p><strong>4) Running Result</strong></p>
+<p>Once run the program, the buzzer will make different sound tone.</p>
+<p><strong>C language Code Analysis</strong></p>
+<pre>//Beginning of <strong>pi3_start_learning_kit_lesson_8/buzzer.c</strong></pre>
+<pre class="easycode; title:;lang:;">#include < wiringPi.h>
+#include < stdio.h>
+#include < stdlib.h>
+
+ // defined Buzzer pin1 connect to GPIO1(BCM GPIO 18)
+#define BuzzerPin 1
+
+for(;;){
+        for(i=0;i<70;i++){
+            //beep on
+            digitalWrite(BuzzerPin, LOW);
+            delay(3);// delay 3 ms to make tone in low frequency
+
+            //beep off
+            digitalWrite(BuzzerPin,HIGH);
+            delay(3); // delay 3 ms to make the tone in low frequency
+        }
+        delay(100);
+            for(i=0;i<100;i++){
+            //beep off
+            digitalWrite(BuzzerPin, HIGH);
+            delay(1); //delay 1 ms to make the tone in high frequency
+            //beep on
+            digitalWrite(BuzzerPin,LOW);
+            delay(1);//delay 1 ms to make the tone in high frequency
+
+        }    }</pre>
+<pre>// end of <strong>pi3_start_learning_kit_lesson_8/buzzer.c</strong></pre>
+<p><a id="8"></a><strong>For Python language user:</strong></p>
+<hr />
+<p>If your Raspberry Pi is connected with a monitor through HDMI cable,then you can program in Python 3(IDLE) GUI environment directly, for more details please visit:<a href="../Lesson 4 Python Light LED/index.html">Lesson 4 Python Light LED</a></p>
+<p>If your Pi is not connected with a monitor, you can use command line to remote access Pi through ssh client. for more details, please visit:<a href="../Lesson 1 Get Started with Raspberry Pi/index.html">Lesson 1 Get Started with Raspberry Pi</a></p>
+<p><strong>Step 1)</strong> download buzzer.py file by typing following command in terminal:</p>
+<p><strong><span style="color: #ff00ff;">cd  ~</span></strong></p>
+<p><strong><span style="color: #ff00ff;"><strong>sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_8/buzzer.py</strong></span></strong></p>
+<p><strong><a href=".\image\7.jpg"><center><img class="alignnone wp-image-7810 size-full" src="http://osoyoo.com/wp-content/uploads/2017/06/py-weget.png" alt="" width="739" height="234" /></center></a></strong></p>
+<p><strong>Step 2) </strong>Run Program</p>
+<p><span style="color: #ff00ff;"><strong>sudo  python  ./buzzer.py</strong></span></p>
+<p><strong><a href=".\image\8.jpg"><center><img class="alignnone wp-image-7811 size-full" src="http://osoyoo.com/wp-content/uploads/2017/06/py-result.png" alt="" width="593" height="273" /></center></a></strong></p>
+<p><strong>Ste[ 3) Test result:</strong></p>
+<p>Once run the program, the buzzer will make sound.</p>
+<p><strong>Python language Code Analysis</strong></p>
+<pre class="easycode; title:;lang:;">import RPi.GPIO as GPIO
+import time
+
+# Set #18 as buzzer pin
+BuzzerPin = 18</pre>
+<p>Import Python GPIO Library and time library. The GPIO library is the library for interacting with the GPIO in Python. It does the job of simplifying the process. The time library is there so we can put a delay in. Set Buzzer pin connect to GPIO1(BCM GPIO 18)</p>
+<pre class="easycode; title:;lang:;"> def setup():
+    # Set the GPIO modes to BCM Numbering
+    GPIO.setmode(GPIO.BCM)
+    # Set BuzzerPin's mode to output, 
+    # and initial level to High(3.3v)
+    GPIO.setup(BuzzerPin, GPIO.OUT, initial=GPIO.HIGH)</pre>
+<p>Set BuzzerPin to output mode, set the initial level as high level (3.3V)</p>
+<pre class="easycode; title:;lang:;"> def main():
+    print_message()
+    while True:
+      GPIO.output(BuzzerPin, GPIO.LOW)
+      time.sleep(0.3)
+      GPIO.output(BuzzerPin, GPIO.HIGH)
+      time.sleep(0.3)</pre>
+<p>Switch the level continuously between low level(0V) and high level(3.3 V) every 0.3 second.  Thus to make the buzzer make sound intermittently.</p><center>
+<h2><a href="../Lesson 7 Raspberry Pi Button Control LED/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\9.jpg" alt=".\image\9.jpg" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\10.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 9 Drive a Relay to Control LED/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\11.jpg" alt="" width="156" height="41" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

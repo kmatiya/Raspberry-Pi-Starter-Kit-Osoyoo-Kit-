@@ -1,0 +1,334 @@
+﻿<html>
+<head>
+<title>Raspberry Pi3 Starter Kit Lesson 10: Raspberry Pi SPI Ports</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 10: Raspberry Pi SPI Ports</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_10_Raspberry_Pi_SPI_ports.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Overview</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Work Principle</a></strong></li>
+<li><strong><a href="#5">Hardware Setup</a></strong></li>
+<li><strong><a href="#6">Software</a></strong></li>
+<li><strong><a href="#7">For C language users</a></strong></li>
+<li><strong><a href="#8">For python users</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Overview</strong></p>
+<p>In this project, we learn how to use SPI protocol to exchange complex data between Raspberry Pi and external device. SPI is a  simple communication protocol to send data which can save a lot of GPIO pin resources. We will only how to program SPI in this lesson, you can google protocol detail if you are interested.</p>
+<p>This external device is MCP3008 analog-digit-convert(ADC) chip. As we've learned from previous lessons, the Raspberry Pi could do many projects with various digital sensors. Unlike Arduino Board, Raspberry Pi doesn't have integrated  ADC(analog to digital converters) so it cannot read analog inputs.<br />
+In this lesson, we will  use MCP3008 ADC chip to convert analog signal to digital signal and send it to Raspberry Pi through SPI.</p>
+<p><a id="2"></a><strong>Hardware Preparation</strong></p>
+<p>1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * MCP3008<br />
+Several jumper wires</p>
+<p><a id="3"></a><b>Software Preparation</b><br />
+Please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">Getting started for raspberry pi</a></p>
+<p><a id="4"></a><strong>Work Principle</strong></p>
+<p>The MCP3008 is a 10-bit  8 channels Analog-to-Digital Converter (ADC) with SPI(Serial Peripheral  Interface Bus) interface. learn more about SPI, please click <a href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus"> https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus </a>.  You can also use MCP3004instead which has 4 input channels ,  for the datasheet about MCP3004/MCP3008, please visit: <a href="http://osoyoo.com/driver/MCP3008_datasheet.pdf">http://osoyoo.com/driver/MCP3008_datasheet.pdf</a></p>
+<p><center><img class="size-medium aligncenter" src=".\image\1.jpg" width="564" height="423" /></center></p>
+<p>In this project, we use Raspberry Pi 3.3V and GND as MCP3008 Input Channel 1 and Input Channel 2 respectly. the MCP3008 will convert the analog signal to digital quantity, this enables the Raspberry Pi to interpret analog voltages that are in turn typically emitted by analog-based sensors to reflect a measure of  a physical characteristic such as acceleration, light intensity or temperature.</p>
+<p><a id="5"></a><strong>Hardware Setup</strong></p>
+<p>MCP3008 uses SPI interface, wiring up the MCP3008 to Pi as following connection graph, NC means Not Connected.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\2.jpg" width="874" height="655" /><strong>*DIN/DOUT PINS</strong></center><br />
+MCP3008 communicates with Raspberry Pi through SPI protocol . In raspberry Pi,  SPI BUS pin pair are BCM 10(out) and BCM 9(in) which are connected to MCP3008 DIN pin and DOUT pin. We call  it a BUS because BCM 10/BCM 9 can be shared with multiple devices.<br />
+Pi accept maximum two devices for SPI bus.  We call them spiChannel 0 and spiChannel 1.  Raspberry Pi use BCM 7 and BCM 8 pin to control these two channels. When an external Device enable pin is connected with Pi BCM 8 pin, it is a spiChannel 0. When device. enable pin is connected with Pi BCM 7 pin, it is a spiChannel 1 device.  From above graph, our MCP3008 is a spiChannel 0 device because CS/SHDN(enable pin) is connected with B10.<br />
+<strong>**Analog Input Pin CH0,CH1...CH7<br />
+</strong>MCP3008 can read 8 different analog input signal from pin CH0,CH1..CH7. The Chip will compare input voltage with Maximum allowed voltage and output an integer between 0 to 1023.  Input analog max value are defined by VREF pin. In this sample circuit, CH0 connected to 3.3V which is same as VREF voltage, so output integer for CH0 is 1023. Ch1 connected to GND, its output is 0. Output will be sent through SPI serial protocol.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\3.jpg" width="1160" height="595" /></center></p>
+<p><a id="6"></a><strong>Sample code</strong></p>
+<p>we’ll provide two kinds of codes for C language users and Python language users.<br />
+<a id="7"></a><strong>For C Language users, please take following steps:</strong></p>
+<hr />
+<p>Note: please be sure installation wiringpi. Click <a href="http://osoyoo.com/2017/06/22/intall-wiringpi/"> http://osoyoo.com/2017/06/22/intall-wiringpi/</a>, you can learn more about how to check whether installing wiringpi and install wiringpi</p>
+<p><strong>Step 1）</strong>Enalble SPI, open file /boot/config.txt , find the code line as followed, change it as <strong>dtparam=spi=on</strong></p>
+<p><span style="color: #ff00ff;"><strong>sudo  nano /boot/config.txt</strong></span></p>
+<p><strong><center><a href=".\image\4.jpg"img class="wp-image-8108 size-full aligncenter" src=".\image\4.jpg" alt="" width="646" height="389" /></center></a></enter></strong></p>
+<p>Press "ctrl" + "X" and then type "Y" to save the file which you revised.</p>
+<p><strong>Step 3) reboot the raspberry pi by typing following command:</strong></p>
+<p><strong><span style="color: #ff00ff;">sudo reboot </span></strong></p>
+<p><strong>Step 3) Download the sample code from osoyoo by typing following commands:</strong></p>
+<p><span style="color: #ff00ff;"><strong>cd  ~</strong></span></p>
+<p><span style="color: #ff00ff;"><strong>sudo  wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_10/readmcp3008.c </strong></span></p>
+<p><a href=".\image\5.jpg"><center><img class="wp-image-8111 size-full aligncenter" src=".\image\5.jpg" alt="" width="685" height="179" /></center></a></p>
+<p><strong>Note:<br />
+</strong>If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:</p>
+<p><span style="color: #ff00ff;"><strong>sudo nano readmcp3008.c</strong></span></p>
+<p><strong>Step 3) Compile Code</strong></p>
+<p>C language is high level language. Before running the project, the code need to compile as an executable file. Please enter the following command:<br />
+<span style="color: #ff00ff;"><strong>gcc  -Wall  -o   readmcp3008   readmcp3008.c  -lwiringPi</strong></span><br />
+<strong>Note: gcc: </strong>is GNU Compiler Collection. If you want to write your own C code and compile to run it, you need to master gcc. for more information about gcc, please visit <a href="https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html">here</a><br />
+<strong>-Wall:</strong> to get more error when compile the code<br />
+<strong>-o</strong>: to name the compiled file. You can name the file as your like. here we name as sw520d<br />
+<strong>buzzer.c</strong>: means the original file which is compiled<br />
+<strong>-lwiringPi</strong>: is to load the library wiringPi (l is short for library)</p>
+<p><strong>Step 4) </strong>Run the Program</p>
+<p>a)Before running the program, using command: <strong>gpio  readall </strong>to check if the MOSI、MISO、SCLK(B10、B9、B11) work mode is ALT0 (alternative functions), if not, please set them to ALT0 by typing terminal command as following:</p>
+<p><strong>gpio  -g  mode  9    alt0</strong></p>
+<p><strong>gpio  -g  mode  10   alt0</strong></p>
+<p><strong>gpio  -g  mode   11   alt0</strong></p>
+<p><center><img class="aligncenter size-medium" src=".\image\6.jpg" width="865" height="588" /></center></p>
+<p>b) Read all value from ADC MCP3008 by typing the following command:</p>
+<p><span style="color: #ff00ff;"><strong>./readmcp3008  all</strong></span></p>
+<p><a href=".\image\7.jpg"><center><img class="wp-image-8109 size-full aligncenter" src=".\image\7.jpg" alt="" width="454" height="385" /></center></a>Once run the program, the terminal will show print message as code firstly, then show all channels value.</p>
+<p>c) Read Channel 1 value from ADC MCP3008 by typing the following command:</p>
+<p><span style="color: #ff00ff;"><strong>./readmcp3008  1</strong></span></p>
+<p><a href=".\image\8.jpg"><center><img class="wp-image-8110 size-full aligncenter" src=".\image\8.jpg" alt="" width="508" height="274" /></center></a></p>
+<p>Once run the program, the terminal will show print message as code firstly, then show the channel 1 value . because we connected the CH1 to 3.3v, CH2 to 0V, so the output channel l value is 1023, the output channel 2 is 0</p>
+<p><strong>Read the comments in following code and understand the programming principle</strong></p>
+<pre class="easycode; title: readmcp300x.c;lang:;">//#define _GNU_SOURCE
+#include < unistd.h>
+#include < stdint.h>
+#include < string.h>
+#include < errno.h>
+#include < wiringPi.h>
+#include < stdio.h>
+#include < stdlib.h>
+#include < wiringPiSPI.h>
+ 
+#define TRUE                (1==1)
+#define FALSE               (!TRUE)
+#define CHAN_CONFIG_SINGLE  8
+#define CHAN_CONFIG_DIFF    0
+ 
+static int myFd ;
+ 
+char *usage = "Usage: mcp3008 all|analogChannel[1-8] [-l] [-ce1] [-d]";
+// -l   = load SPI driver,  default: do not load
+// -ce1  = spi analogChannel 1, default:  0
+// -d   = differential analogChannel input, default: single ended
+ 
+void loadSpiDriver()
+{
+    if (system("gpio load spi") == -1)
+    {
+        fprintf (stderr, "Can't load the SPI driver: %s\n", strerror (errno)) ;
+        exit (EXIT_FAILURE) ;
+    }
+}
+ 
+void spiSetup (int spiChannel)
+{
+    if ((myFd = wiringPiSPISetup (spiChannel, 10000)) <  0)
+    {
+        fprintf (stderr, "Can't open the SPI bus: %s\n", strerror (errno)) ;
+        exit (EXIT_FAILURE) ;
+    }
+}
+ 
+int myAnalogRead(int spiChannel,int channelConfig,int analogChannel)
+{
+    if(analogChannel< 0 || analogChannel>7)
+        return -1;
+    unsigned char buffer[3] = {1}; // start bit
+    buffer[1] = (channelConfig+analogChannel) < <  4;
+    wiringPiSPIDataRW(spiChannel, buffer, 3);
+    return ( (buffer[1] & 3 ) < <  8 ) + buffer[2]; // get last 10 bits
+}
+
+void print_info()
+{
+    printf("\n");
+    printf("|*****************************************|\n");
+    printf("|    Read MCP3008(3004) ADC value         |\n");
+    printf("|    ------------------------------       |\n");
+    printf("|       | ADC |           | Pi  |         |\n");
+    printf("|       |-----|-----------|-----|         |\n");
+    printf("|       | CS  | connect to| CE0 |         |\n");
+    printf("|       | Din | connect to| MOSI|         |\n");
+    printf("|       | Dout| connect to| MISO|         |\n");
+    printf("|       | CLK | connect to| SCLK|         |\n");
+    printf("|       | CH0 | connect to| 3.3V|         |\n");
+    printf("|       | CH1 | connect to| GND |         |\n");
+    printf("|                                   OSOYOO|\n");
+    printf("|*****************************************|\n");
+    printf("\n");
+
+} 
+
+int main (int argc, char *argv [])
+{
+    int loadSpi=FALSE;
+    int analogChannel=0;
+
+   //as MCP3008 enable pin connected to Pi B8, we need tell C program to use spiChannel 0
+    int spiChannel=0;
+    int channelConfig=CHAN_CONFIG_SINGLE;
+    if (argc <  2)
+    {
+        fprintf (stderr, "%s\n", usage) ;
+        return 1 ;
+    }
+    if((strcasecmp (argv [1], "all") == 0) )
+        argv[1] = "0";
+    if ( (sscanf (argv[1], "%i", &analogChannel)!=1) || analogChannel < 0 || analogChannel > 8 )
+    {
+        printf ("%s\n",  usage) ;
+        return 1 ;
+    }
+    int i;
+    for(i=2; i< argc; i++) { if (strcasecmp (argv [i], "-l") == 0 || strcasecmp (argv [i], "-load") == 0) loadSpi=TRUE; else if (strcasecmp (argv [i], "-ce1") == 0) spiChannel=1; else if (strcasecmp (argv [i], "-d") == 0 || strcasecmp (argv [i], "-diff") == 0) channelConfig=CHAN_CONFIG_DIFF; } // if(loadSpi==TRUE) loadSpiDriver(); wiringPiSetup () ; spiSetup(spiChannel); print_info(); // if(analogChannel>0)
+    {
+        printf("MCP3008(CE%d,%s): analogChannel %d = %d\n",spiChannel,(channelConfig==CHAN_CONFIG_SINGLE)
+               ?"single-ended":"differential",analogChannel,myAnalogRead(spiChannel,channelConfig,analogChannel-1));
+    }
+    else
+    {
+        for(i=0; i< 8; i++)
+        {
+            printf("MCP3008(CE%d,%s): analogChannel %d = %d\n",spiChannel,(channelConfig==CHAN_CONFIG_SINGLE)
+                   ?"single-ended":"differential",i+1,myAnalogRead(spiChannel,channelConfig,i));
+        }
+    }
+    close (myFd) ;
+    return 0;
+}</pre>
+<p><a id="8"></a><strong>For Python Language users</strong></p>
+<hr />
+<p>When programming with Python language , normally we use GPIO library called <strong>RPi.GPIO </strong>which comes with Rasbian Jessie OS. Visit <a href="http://osoyoo.com/2017/06/22/intall-wiringpi/">http://osoyoo.com/2017/06/22/intall-wiringpi/</a>, you can learn more about RPI.GPIO and Python.</p>
+<p>1) download sample code by typing following command in terminal:</p>
+<p><strong><span style="color: #ff00ff;">cd  ~</span></strong></p>
+<p><strong><span style="color: #ff00ff;">sudo  wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_10/readmcp3008.py</span></strong></p>
+<p><a href=".\image\9.jpg"><center><img class="wp-image-8114 size-full aligncenter" src=".\image\9.jpg" alt="" width="676" height="208" /></center></a></p>
+<p><strong>Note:<br />
+</strong>If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:</p>
+<p><span style="color: #ff00ff;"><strong>sudo nano readmcp3008.py</strong></span></p>
+<p><strong>2) Run the program</strong></p>
+<p><span style="color: #ff00ff;"><strong>sudo  python  ./readmcp3008.py</strong></span></p>
+<p>3) Running result</p>
+<p>a)Then type the output Channel that you want to read, for example: if we type 0 (zero) in terminal and press enter, then the terminal will print the Channel 0 value.</p>
+<p><a href=".\image\10.jpg"><center><img class="wp-image-8115 size-full aligncenter" src=".\image\10.jpg" alt="" width="529" height="340" /></center></a></p>
+<p>b) if the input value is not in scope, it will print the prompt message.</p>
+<p><a href=".\image\11.jpg"><center><img class="wp-image-8116 size-full aligncenter" src=".\image\11.jpg" alt="" width="438" height="358" /></center></a></p>
+<p><strong>Read the comments in following code and understand the programming principle</strong></p>
+<pre class="easycode; title: readmcp3008.py;lang:;">import time
+import os
+import RPi.GPIO as GPIO
+
+# change these as desired - they're the pins connected from the
+# define SPI port on the ADC to the Cobbler
+
+# use BCM 11 as SPI clock signal
+SPICLK = 11
+#MISO and MOSI are the data pins required by SPI, google it for detail
+#use BCM 9 as MISO to accept signal from external SPI output
+SPIMISO = 9
+
+#use BCM 10 as MOSI to to send signal to external SPI input
+SPIMOSI = 10
+
+#use BCM 8 as SPI CS to enable/disable extern SPI device
+SPICS = 8
+
+#DEBUG = 1
+
+#setup function for some setup---custom function
+def setup():
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    # set up the SPI interface pins
+    GPIO.setup(SPIMOSI, GPIO.OUT)
+    GPIO.setup(SPIMISO, GPIO.IN)
+    GPIO.setup(SPICLK, GPIO.OUT)
+    GPIO.setup(SPICS, GPIO.OUT)
+    
+#print message at the begining ---custom function
+def print_message():
+
+    print ('|**********************************|')
+    print ('|   Read MCP3008(3004) ADC value   |')
+    print ('|   -----------------------------  |')
+    print ('|    | ADC |           | Pi  |     |')
+    print ('|    |-----|-----------|-----|     |')
+    print ('|    | CS  | connect to| CE0 |     |')
+    print ('|    | Din | connect to| MOSI|     |')
+    print ('|    | Dout| connect to| MISO|     |')
+    print ('|    | CLK | connect to| SCLK|     |')
+    print ('|    | CH0 | connect to| 3.3V|     |')
+    print ('|    | CH1 | connect to| GND |     |')
+    print ('|   -----------------------------  |')
+    print ('|                            OSOYOO|')
+    print ('|**********************************|\n')
+    print ('Program is running...')
+    print ('Please press Ctrl+C to end the program...')
+    print ('please input 0 to 7...')
+ 
+# read SPI data from MCP3008 chip, 8 possible adc's (0 thru 7)
+def readadc(adcnum, clockpin, mosipin, misopin, cspin):
+        if ((adcnum > 7) or (adcnum < 0)):
+                return -1
+        GPIO.output(cspin, True)
+
+        GPIO.output(clockpin, False)  # start clock low
+        GPIO.output(cspin, False)     # bring CS low to enable MCP3008
+
+        commandout = adcnum
+        commandout |= 0x18  # start bit + single-ended bit
+        commandout <<= 3    # we only need to send 5 bits here
+       
+        #Tell MCP3008 I am getting data from which ADC#
+        for i in range(5):  
+                if (commandout & 0x80):
+                        GPIO.output(mosipin, True)
+                else:
+                        GPIO.output(mosipin, False)
+                commandout <<= 1
+                GPIO.output(clockpin, True)
+                GPIO.output(clockpin, False)
+        #Read SPI data from MCP3008 and save it to variable adcout
+        adcout = 0
+        # read in one empty bit, one null bit and 10 ADC bits
+        for i in range(12):
+                GPIO.output(clockpin, True)
+                GPIO.output(clockpin, False)
+                adcout <<= 1 if (GPIO.input(misopin)): adcout |= 0x1 GPIO.output(cspin, True) adcout >>= 1       # first bit is 'null' so drop it
+        return adcout
+            
+#main function
+def main():
+    #print info
+    print_message()
+    analogChannel = int(input())
+    if (analogChannel < 0) or (analogChannel > 7):
+        print ('input error analogChannel number!')
+        print ('please input 0 to 7...')
+    else:
+        adc = readadc(analogChannel, SPICLK, SPIMOSI, SPIMISO, SPICS)
+        print ('analogChannel %d = %d'%(analogChannel,adc))
+
+#define a destroy function for clean up everything after the script finished
+def destroy():
+    #release resource
+    GPIO.cleanup()
+#
+# if run this script directly ,do:
+if __name__ == '__main__':
+    setup()
+    try:
+            main()
+    #when 'Ctrl+C' is pressed,child program destroy() will be executed.
+    except KeyboardInterrupt:
+        destroy()</pre>
+<center><h2><a href="../Lesson 9 Drive a Relay to Control LED/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\12.jpg" alt=".\image\10.jpg" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\13.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 11 Raspberry Pi Control the LED Brightness/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\14.jpg" alt="" width="156" height="41" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

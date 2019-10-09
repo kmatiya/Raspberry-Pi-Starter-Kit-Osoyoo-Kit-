@@ -1,0 +1,328 @@
+﻿<html>
+<head>
+<title>Lesson 13: I2C 1602 LCD</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 13: I2C 1602 LCD</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_13_I2C_1602_LCD.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Overview</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Work Principle</a></strong></li>
+<li><strong><a href="#5">Hardware Setup</a></strong></li>
+<li><strong><a href="#6">Software</a></strong></li>
+<li><strong><a href="#7">For C language users</a></strong></li>
+<li><strong><a href="#8">For python users</a></strong></li>
+</ul>
+<p><a id="1"><strong>Overview</strong></a></p>
+<p>In this lesson, we'll introduce how to drive IIC (sometimes call I2C) 1602 LCD using Raspberry Pi.</p>
+<p><a id="2"><strong>Hardware Preparation</strong></a></p>
+<p>1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * IIC 1602 LCD (16 x 2 characters)<br />
+Several jumper wires</p>
+<p><a id="3"><strong>Software Preparation</strong></a></p>
+<p><strong>Note:</strong> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit<a href="../Lesson 1 Get Started with Raspberry Pi/index.html">Getting started for raspberry pi</a></p>
+<p><a id="4"><strong>Work Principle</strong></a></p>
+<p>This This 1602 LCD display screen can display 16(each row) x 2 (rows) characters. Generally, LCD 1602 has parallel port, it occupy many GPIO pins. This 1602 LCD comes with a I2C communicate interface using a <a href="http://osoyoo.com/driver/PCF8574.pdf">PCF8574</a> IC Chip. It means you can realize data display via only 2 wires.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\1.jpg" width="1049" height="510" /></center></p>
+<p>Wiring up IIC 1602 LCD to Pi as following connection graph.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\2.jpg" width="639" height="395" /></center></p>
+<p><strong>Note:  </strong>SDA 1 is BCM 2 , SCL 1 is BCM 3 , for detail about GPIO#, read <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html" target="_blank" rel="noopener noreferrer">Lesson 2</a> , these 2 pins normally are used to exchange serial data with external devices.</p>
+<p><a id="5"><strong><br />
+Hardware Setup</strong>:</a></p>
+<p><span style="color: #ff00ff;"><a href=".\image\3.jpg"><center><img class="aligncenter wp-image-8418 size-large" src=".\image\3.jpg" alt="" width="924" height="414" /></a><a href=".\image\4.jpg"><img class="aligncenter wp-image-8419 size-large" src=".\image\4.jpg" alt="" width="1024" height="575" /></a></span></center></p>
+<p><a id="6"><strong>Sample code</strong></a></p>
+<p>To use the IIC 1602 LCD,we should enable the I2C port firstly, please follow the steps as followed:</p>
+<p>1) Open IIC</p>
+<p><span style="color: #ff00ff;"><strong>sudo  nano  /boot/config.txt</strong></span></p>
+<p>open the file /boot/config.txt, find the code line"dtparam=i2c_arm"，checking if there is # sign in front of the line, uncomment it (remove the # in front of this line), and make sure the end of the line is"on", finally the code should look like this:</p>
+<p><center><img class="aligncenter size-medium" src=".\image\5.jpg" width="858" height="122" /></center></p>
+<p>Press Ctrl+X，and type "Y" to save the file you revised.</p>
+<p>2) Load Modules</p>
+<p><span style="color: #ff00ff;"><strong><em>sudo nano /etc/modules</em></strong></span></p>
+<p>open <em>/etc/modules file，Add these two lines as below:</em></p>
+<p><span style="color: #ff9900;"><strong><em>i2c-bcm2708<br />
+i2c-dev</em></strong></span></p>
+<p>Press Ctrl+X, and type "Y" to save the file you revised.</p>
+<p>3) Install i2c python library and smbus</p>
+<p><span style="color: #ff00ff;"><strong><em>sudo apt-get install -y python-smbus i2c-tools</em></strong></span></p>
+<p>Now reboot Pi</p>
+<p><span style="color: #ff00ff;"><strong>reboot</strong></span></p>
+<p>4) Cheking the  if library is installed successfully by typing following command：</p>
+<p><span style="color: #ff00ff;"><strong><em>lsmod | grep i2c</em></strong></span></p>
+<p>If the terminal will show the message as below if installed successfully,otherwise please repeat above steps.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\6.jpg" width="736" height="88" /></center></p>
+<p>5) Checking for any components connected to the i2c bus by using i2c detect</p>
+<p><em><span style="color: #ff00ff;"><strong>sudo i2cdetect -y 1</strong></span><br />
+</em>or port 0 on the older Raspberry Pi<em><br />
+<span style="color: #ff00ff;"><strong>sudo i2cdetect -y 0</strong></span></em></p>
+<p>Once run the command, A table like below will be shown and if any devices are connected, the address will be shown. Below you can see that a device is connected to the i2c bus which is using the address of 0x3f.</p>
+<p><center><img class="aligncenter size-medium" src=".\image\7.jpg" width="801" height="232" /></center></p>
+<p><strong>Note</strong>: Above code line 5 is to define LCD I2C address. If your LCD does not display properly, you might need change the value from 0x3f to 0x27</p>
+<hr />
+<p><a id="7">For  <span id="result_box" class="short_text" lang="en"><span class="">C language user,please take the steps as followed:</span></span></a></p>
+<p><strong>1)  Download the sample code by typing following terminal command:</strong></p>
+<p><strong><span style="color: #ff00ff;">cd  ~</span></strong></p>
+<p><strong><span style="color: #ff00ff;">sudo  wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_13/i2c1602_lcd.c</span></strong></p>
+<p><a href=".\image\8.jpg"><center><img class="aligncenter wp-image-8334 size-large" src=".\image\8.jpg" alt="" width="1024" height="275" /></center></a>If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:</p>
+<p><strong><span style="color: #ff00ff;">sudo nano  i2c1602_lcd.c</span></strong></p>
+<p><strong>2) copmlie code</strong></p>
+<p><span style="color: #ff00ff;"><strong>gcc   -Wall   -o  i2c1602_lcd   i2c1602_lcd.c    -lwiringPi</strong></span></p>
+<p><strong>3) Run the program</strong></p>
+<p><span style="color: #ff00ff;"><strong>sudo  ./i2c1602_lcd</strong></span></p>
+<p><strong><a href=".\image\9.jpg"><center><img class="aligncenter wp-image-8336 size-large" src=".\image\9.jpg" alt="" width="1024" height="432" /></center></a>4) Running result</strong></p>
+<p>Once run the program, the terminal will message as code, while the LCD screen will display the message at the same time.</p>
+<p><strong>Note：</strong>You can adjust the contrast of the screen by spinning the potentiometer  screw in the back of the LCD clockwise or anticlockwise, until the screen displays characters clearly.</p>
+<p><strong>C source code and comments:</strong></p>
+<pre class="easycode; title: i2c1602_lcd.c;lang:;">#include < stdio.h>
+#include < wiringPi.h>
+#include < wiringPiI2C.h>
+#include < string.h>
+int LCDAddr = 0x3f;//I2c address of LCD, some LCD i2c address might be 0x27
+int BLEN = 0;//1--open backlight.0--close backlight
+int fd;//linux file descriptor
+//send an  16 bits data to LCD buffer
+void write_word(int data){
+    int temp = data;
+    if ( BLEN == 1 )
+        temp |= 0x08;
+    else
+        temp &= 0xF7;
+    wiringPiI2CWrite(fd, temp);
+}
+//send control command to lcd
+void send_command(int comm){
+    int buf;
+    // Send bit7-4 firstly
+    buf = comm & 0xF0;
+    buf |= 0x04;            // RS = 0, RW = 0, EN = 1
+    write_word(buf);
+    delay(2);
+    buf &= 0xFB;            // Make EN = 0
+    write_word(buf);
+    // Send bit3-0 secondly
+    buf = (comm & 0x0F) 
+    buf |= 0x04;            // RS = 0, RW = 0, EN = 1
+    write_word(buf);
+    delay(2);
+    buf &= 0xFB;            // Make EN = 0
+    write_word(buf);
+}
+//send character to lcd
+void send_data(int data){
+    int buf;
+    // Send bit7-4 firstly
+    buf = data & 0xF0;
+    buf |= 0x05;            // RS = 1, RW = 0, EN = 1
+    write_word(buf);
+    delay(2);
+    buf &= 0xFB;            // Make EN = 0
+    write_word(buf);
+    // Send bit3-0 secondly
+    buf = (data & 0x0F) 
+    buf |= 0x05;            // RS = 1, RW = 0, EN = 1
+    write_word(buf);
+    delay(2);
+    buf &= 0xFB;            // Make EN = 0
+    write_word(buf);
+}
+//initialize the lcd
+void init(){
+    send_command(0x33); // Must initialize to 8-line mode at first
+    delay(5);
+    send_command(0x32); // Then initialize to 4-line mode
+    delay(5);
+    send_command(0x28); // 2 Lines & 5*7 dots
+    delay(5);
+    send_command(0x0C); // Enable display without cursor
+    delay(5);
+    send_command(0x01); // Clear Screen
+    wiringPiI2CWrite(fd, 0x08);
+}
+//clear screen
+void clear(){
+    send_command(0x01); //clear Screen
+}
+//Print the message on the lcd
+void write(int x, int y, char data[]){
+    int addr, i;
+    int tmp;
+    if (x < 0) x = 0; if (x > 15) x = 15;
+    if (y < 0) y = 0; if (y > 1)  y = 1;
+    // Move cursor
+    addr = 0x80 + 0x40 * y + x;
+    send_command(addr);
+    
+    tmp = strlen(data);
+    for (i = 0; i < tmp; i++){
+        send_data(data[i]);
+    }
+}
+void print_info()
+{
+    printf("\n");
+    printf("|***************************|\n");
+    printf("|    IIC 1602 LCD test      |\n");
+    printf("| --------------------------|\n");
+    printf("| | LCD |            | Pi   |\n");
+    printf("| --------------------------|\n");
+    printf("| | GND | connect to | GND  |\n");
+    printf("| | VCC | connect to | 5V   |\n");
+    printf("| | SDA | connect to | SDA.1|\n");
+    printf("| | SCL | connect to | SCL.1|\n");
+    printf("| --------------------------|\n");
+    printf("|                     OSOYOO|\n");
+    printf("|***************************|\n");
+    printf("Program is running...\n");
+    printf("Press Ctrl+C to end the program\n");
+}
+int main(){
+    //init I2C, assign a buffer handler to variable fd
+    fd = wiringPiI2CSetup(LCDAddr);
+    init();
+    print_info();
+    write(0, 0, "Hi man.Welcome ");
+    write(0, 1, "to osoyoo.com");
+    delay(3000);
+    clear();
+    while(1){
+        write(0,0,"This is Lesson13");
+        write(0,1,"IIC LCD Test");
+        delay(1000);
+    }
+    return 0;
+}</pre>
+<p><a id="8"><strong>For Python language user</strong></a></p>
+<hr />
+<p><strong>1) Download the Python code from osoyoo by typing following commands:</strong></p>
+<p><strong><span style="color: #ff00ff;">cd  ~</span></strong></p>
+<p><strong><span style="color: #ff00ff;">sudo  wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_13/i2c1602_lcd.py</span></strong></p>
+<p><a href=".\image\10.jpg"><center><img class="aligncenter wp-image-8338 size-large" src=".\image\10.jpg" alt="" width="1024" height="299" /></center></a></p>
+<p><strong>Open I2C1602_lcd.py file by typing following command in terminal:</strong></p>
+<p><strong>sudo nano i2c1602_lcd.py</strong></p>
+<p><strong>find the code line as blow and change the address to your correct I2C address, in this example,the I2C address is 0x3F<a href=".\image\11.jpg"><center><img class="aligncenter wp-image-8337 size-large" src=".\image\11.jpg" alt="" width="1024" height="534" /></center></a></strong></p>
+<p><strong>2) Run the program</strong></p>
+<p><span style="color: #ff00ff;"><strong>sudo  python  ./i2c1602_lcd.py</strong></span></p>
+<p><strong>3) Running result</strong></p>
+<p>Once run the program, the terminal will message as code, while the LCD screen will display the message at the same time.</p>
+<p><strong>Note：</strong>You can adjust the contrast of the screen by spinning the potentiometer clockwise or anticlockwise, until the screen displays characters clearly.</p>
+<p><strong>Python sample code Analysis:</strong></p>
+<pre class="easycode; title:;lang:;">import smbus
+import time
+
+# Define some device parameters
+I2C_ADDR  = 0x3F # I2C device address, if any error, change this address to 0x27
+LCD_WIDTH = 16   # Maximum characters per line
+
+# Define some device constants
+LCD_CHR = 1 # Mode - Sending data
+LCD_CMD = 0 # Mode - Sending command
+
+LCD_LINE_1 = 0x80 # LCD RAM address for the 1st line
+LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
+LCD_LINE_3 = 0x94 # LCD RAM address for the 3rd line
+LCD_LINE_4 = 0xD4 # LCD RAM address for the 4th line
+
+LCD_BACKLIGHT  = 0x08  # On
+#LCD_BACKLIGHT = 0x00  # Off
+
+ENABLE = 0b00000100 # Enable bit
+
+# Timing constants
+E_PULSE = 0.0005
+E_DELAY = 0.0005
+
+#Open I2C interface
+#bus = smbus.SMBus(0)  # Rev 1 Pi uses 0
+bus = smbus.SMBus(1) # Rev 2 Pi uses 1
+
+def lcd_init():
+ # Initialise display
+ lcd_byte(0x33,LCD_CMD) # 110011 Initialise
+ lcd_byte(0x32,LCD_CMD) # 110010 Initialise
+ lcd_byte(0x06,LCD_CMD) # 000110 Cursor move direction
+ lcd_byte(0x0C,LCD_CMD) # 001100 Display On,Cursor Off, Blink Off 
+ lcd_byte(0x28,LCD_CMD) # 101000 Data length, number of lines, font size
+ lcd_byte(0x01,LCD_CMD) # 000001 Clear display
+ time.sleep(E_DELAY)
+
+def lcd_byte(bits, mode):
+ # Send byte to data pins
+ # bits = the data
+ # mode = 1 for data
+ #        0 for command
+
+ bits_high = mode | (bits & 0xF0) | LCD_BACKLIGHT
+ bits_low = mode | ((bits<<4) & 0xF0) | LCD_BACKLIGHT
+
+ # High bits
+ bus.write_byte(I2C_ADDR, bits_high)
+ lcd_toggle_enable(bits_high)
+
+ # Low bits
+ bus.write_byte(I2C_ADDR, bits_low)
+ lcd_toggle_enable(bits_low)
+
+def lcd_toggle_enable(bits):
+ # Toggle enable
+ time.sleep(E_DELAY)
+ bus.write_byte(I2C_ADDR, (bits | ENABLE))
+ time.sleep(E_PULSE)
+ bus.write_byte(I2C_ADDR,(bits & ~ENABLE))
+ time.sleep(E_DELAY)
+
+def lcd_string(message,line):
+ # Send string to display
+
+ message = message.ljust(LCD_WIDTH," ")
+
+ lcd_byte(line, LCD_CMD)
+
+ for i in range(LCD_WIDTH):
+   lcd_byte(ord(message[i]),LCD_CHR)
+
+def main():
+ # Main program block
+
+ # Initialise display
+ lcd_init()
+
+ while True:
+
+   # Send some test
+   lcd_string("Created by         <",LCD_LINE_1)
+   lcd_string("Osoyoo.com        <",LCD_LINE_2) time.sleep(3) # Send some more text lcd_string("> Tutorial Url:",LCD_LINE_1)
+   lcd_string("> http://osoyoo.com",LCD_LINE_2)
+
+   time.sleep(3)
+
+if __name__ == '__main__':
+
+ try:
+   main()
+ except KeyboardInterrupt:
+   pass
+ finally:
+   lcd_byte(0x01, LCD_CMD)</pre>
+<center><h2><a href="../Lesson 12 Raspberry Pi Drive SG90 Servo/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\12.jpg" alt=".\image\12.jpg" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\13.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 14 SW520D Tilt Switch with Raspberry Pi/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\14.jpg" alt="" width="156" height="41" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

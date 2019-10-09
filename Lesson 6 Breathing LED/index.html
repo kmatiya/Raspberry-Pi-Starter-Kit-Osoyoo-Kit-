@@ -1,0 +1,263 @@
+﻿<html>
+<head>
+<title>Raspberry Pi3 Starter Kit Lesson 6: Breathing LED</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 6: Breathing LED</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_6_breathing_LED.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+ 	<li><strong><a href="#1">Overview</a></strong></li>
+ 	<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+ 	<li><strong><a href="#3">Software Preparation</a></strong></li>
+ 	<li><strong><a href="#4">Work Principle</a></strong></li>
+ 	<li><strong><a href="#5">Hardware Setup</a></strong></li>
+ 	<li><strong><a href="#6">Software</a></strong></li>
+ 	<li><strong><a href="#7">For C language users</a></strong></li>
+ 	<li><strong><a href="#8">For python users</a></strong></li>
+</ul>
+<a id="1"></a><strong>Overview</strong><br/>
+
+In last Lesson, we've learned how how to control the LEDs, in this article will make a breakthough: making a light LED “breathing” using Raspberry Pi. The light intensity will start from zero and gradually will increase up to maximum and then will decrease back to zero as if the LED is breathing<br/><br/>
+
+<a id="2"></a><strong>Hareware Preparation</strong><br/>
+1 * Raspberry Pi<br/>
+1 * Breadboard<br/>
+1 * LED<br/>
+1 * Resistor (200Ω)<br/>
+Some Jumper wires<br/>
+1 * T-Extension Board<br/>
+1 * 40-Pin Cable<br/><br/>
+
+<a id="3"></a><strong>Software Preparation</strong><br/>
+Please visit <a href="<a href="../Lesson 1 Get Started with Raspberry Pi/index.html">getting started for raspberry pi</a><br/><br/>
+
+<strong>Work Principle</strong>-<a id="4"></a><strong>Use PWM signal to change LED brightness </strong><br/>
+To Control and change LED brightness, we will use PWM signal om this lesson. The PWM(Pulse Width Modulation) is a very very important signal which we will use very often in other lessons.
+
+In simple words,  PWM is a digital signal which can change its power amount as per software instruction. So if we want to program the power of a device, such as  brightness of LED, speed of motor etc, we need to use PWM signal to power and control these devices.
+
+In Raspberry Pi board, hardware can generate programmable PWM signal  in BCM pin 18 (wiringPi pin#1).
+
+For more information about PWM, Please visit <span id="contentlabels"><a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">https://en.wikipedia.org/wiki/Pulse-width_modulation</a>.</span><br/><br/>
+
+<a id="5"></a><strong>Circuit Graph:</strong>
+
+<a href=".\image\1.jpg"><center><img class="aligncenter size-medium" src=".\image\1.jpg" width="650" height="305" /></center></a><br/><br/><br/>
+<strong>Step 1: Hardware Connection</strong>
+
+<a href=".\image\2.jpg"><center><img class="alignnone wp-image-7490 size-large" src=".\image\2.jpg" alt="" width="1024" height="424" /></center></a>
+
+<a href=".\image\3.jpg"><center><img class="alignnone wp-image-7582 size-large" src=".\image\3.jpg" alt="" width="1024" height="573" /></center></a><br/><br/>
+
+<a id="6"></a><strong>Step 2: Code</strong><br/>
+
+we’ll provide two kinds of codes for C language users and Python language users.
+
+<a id="7"></a>For C Language users, please follow the next step:<br/><br/>
+Firstly, Please make sure the wiringPi library is installed, if you don’t know how to install it, please visit: www.http://osoyoo.com/2017/06/22/intall-wiringpi/<br/>
+
+1 )<strong>Download the C sample code breathing_led.c from osoyoo by typing following command:</strong><br/>
+
+<span style="color: #ff00ff;"><strong>cd  ~</strong></span><br/>
+
+<span style="color: #ff00ff;"><strong>sudo wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_6/breathing_led.c</strong></span><br/><br/>
+
+
+If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:
+
+<span style="color: #ff00ff;"><strong> nano  breathing_led.c </strong></span><br/>
+<a href=".\image\4.jpg"><center><img class="alignnone wp-image-7583 size-full" src=".\image\4.jpg" alt="" width="810" height="451" /></center></a><br/><br/>
+
+2) <strong>Compile Code</strong><br/>
+C language is high level language. Before running the project, the code need to compile as an executable file. Please enter the following command:<br/>
+
+<span style="color: #ff00ff;"><strong>gcc  -Wall  -o  breathing_led  breathing_led.c  -lwiringPi</strong></span><br/>
+<strong>Note: gcc: </strong>is GNU Compiler Collection. If you want to write your own C code and compile to run it, you need to master gcc. for more information about gcc, please visit <a href="https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html">https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html</a><br/>
+<strong>-Wall:</strong> to get more error when compile the code<br
+<strong>-o</strong>: to name the compiled file. You can name the file as your like. here we name as breadthing_led<br
+<strong>flow_led.c</strong>: means the original file which is compiled<br
+<strong>-lwiringPi</strong>: is to load the library wiringPi (l is short for library)<br/><br/>
+
+<strong>3)Run the Program</strong>
+<strong> </strong>Enter the following command and press “enter” to run the project:<br/>
+
+<span style="color: #ff00ff;"><strong>sudo  ./breathing_led</strong></span><br/>
+
+<a href=".\image\5.jpg"><center><img class="alignnone wp-image-7586 size-full" src=".\image\5.jpg" alt="" width="684" height="398" /></center></a><br/><br/>
+
+Note: Because use PWM function in this project, we must use sudo(superuser do) command with the root privileges. otherwise the pi will crash.<br/><br/>
+
+<strong>4) Running Result</strong><br/>
+
+Once run the program, you should see the LED light “breathing”.  If you want to stop the program, please go to terminal and type command: Ctrl + C, press “Enter” to end it.  As we mentioned you can use nano to edit the code, so next we give details explanation about the code as following so that you can understand the code fully and try to modify the above code to personalize it.<br/><br/>
+
+<strong>C language Code Analysis</strong><br/>
+
+a)<strong>#include</strong> header file(.h file) which is used in this project at the beginning of the code.
+<pre class="easycode; title:;lang:;">#include &lt; wiringPi.h&gt;
+#include &lt; stdio.h&gt;
+#include &lt; stdlib.h&gt;
+
+//pin 1(BCM GPIO 18) is PWM  port
+#define  LEDPIN   1</pre>
+Before using the wiringPi<b><i> </i></b>GPIO library, you need to include its header file in your programs.
+
+<strong>WiringPi</strong> is a GPIO interface library for the Raspberry Pi, it includes a command-line utility <strong>gpio</strong> which can be used to program and setup the GPIO pins. You can use this to read and write the pins and even use it to control them from shell scripts.
+<strong>Stdio</strong> is an O/I library for C, In C/C++ we use some functions like printf(), scanf(), cout,cin.
+
+<strong> #define  LEDPIN   1 </strong>
+
+Above statement defined wiringPi pin 1(BCM GPIO 18) as PWM  port.
+*Please noted that BMW 18 is the only Raspberry Pi pin which has hardware PWM feature. If you change LEDPIN  definition from pin 1 to other pin number, the brightness function <strong><em>pwmWrite(LEDPIN,bright)</em> </strong> wouldn't work and your LED can not breath(change brightness).
+
+If you do want to use other pin instead of BCM 18 to output PWM,  you might need software PWM library instead, the brightness function will be no more <strong><em>pwmWrite(LEDPIN,bright)</em> . </strong>For more information about Software PWM Library, please visit:
+
+[embed]http://wiringpi.com/reference/software-pwm-library/[/embed]
+<pre class="easycode; title:;lang:;"> int main(){
+    int bright;
+    if(wiringPiSetup()==-1){
+        printf("setup wiringPi failed!\n");
+        printf("please check your setup\n");
+        exit(1);
+    }
+    
+    pinMode(LEDPIN,PWM_OUTPUT);
+
+    printf("\n");
+    printf("\n");
+    printf("********************************|\n");
+    printf("|         Breath LED            |\n");
+    printf("|   ------------------------    |\n");
+    printf("|                               |\n");
+    printf("|   LED_R1 connect to GPIO1     |\n");
+    printf("|                               |\n");
+    printf("|                               |\n");
+    printf("|                         OSOYOO|\n");
+    printf("********************************|\n");
+    for(;;){
+         printf("|*****************|\n");
+         printf("|   breatf off    |\n"); 
+         printf("|*****************|\n");
+         for(bright=0;bright&lt;1024;++bright){ pwmWrite(LEDPIN,bright); delay(2); } printf("|*****************|\n"); printf("| breath on |\n"); printf("|*****************|\n"); for(bright=1023;bright&gt;=0;--bright){
+            //USE pwmWrite function defined in wiringPito control LED brightness
+
+            pwmWrite(LEDPIN,bright);
+            delay(2);
+            }
+        }
+    return 0;
+ }
+
+</pre>
+<strong>Explanation about two import functions in above codes:</strong>
+<em>pinMode(LEDPIN,PWM_OUTPUT) </em>  set BCM 18 pin to output mode which allow it to output PWM signal.
+
+pwmWrite(LEDPIN,bright);  to set PWM signal value as per variable <strong><em>bright, </em></strong>so that the brightness can change accordingly.
+
+*******************************************************************************************<br/><br/>
+
+<a id="8"></a><strong>For Python language user:</strong><br/>
+
+<strong>1)Download the Python Sample code from osoyoo by typing following command:</strong><br/>
+
+<span style="color: #ff00ff;"><strong>cd   ~</strong></span><br/>
+
+<span style="color: #ff00ff;"><strong>sudo wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_6/breathing_led.pynano </strong></span><br/><br/>
+
+<strong>2)If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:</strong><br/>
+
+<span style="color: #ff00ff;"><strong>sudo nano breathing_led.py</strong></span><br/>
+<a href=".\image\7.jpg"><center><img class="alignnone wp-image-7615 " src=".\image\7.jpg" alt="" width="720" height="461" /></center></a><br/><br/>
+
+<strong>3)Run the Program</strong>
+<strong> </strong>Enter the following command and press “enter” to run the project:<br/>
+<span style="color: #ff00ff;"><strong>sudo python ./breathing_led.py</span></strong><br/>
+
+<a href=".\image\8.jpg"><center><img class="alignnone wp-image-7616 size-full" src=".\image\8.jpg" alt="" width="610" height="484" /></center></a><br/><br/>
+
+<strong>4) Running Result</strong><br/>
+
+Once run the program, you should see the LED light “breathing”.  If you want to stop the program, please go to terminal and type command: Ctrl + C, press “Enter” to end it.  As we mentioned you can use nano to edit the code, so next we give details explanation about the code as following so that you can understand the code fully and try to modify the above code to personalize it.
+
+<strong>Python Launguage Analysis</strong>
+
+a)Import Python GPIO Library and time library. The GPIO library is the library for interacting with the GPIO in Python. It does the job of simplifying the process. The time library is there so we can put a delay in, otherwise the blink might be too fast to notice.
+<pre class="easycode; title:;lang:;">import RPi.GPIO as GPIO
+import time
+
+#set BCM_GPIO 18(GPIO1) as LED pin
+LEDPIN = 18</pre>
+b)Define a function to print the LED and GPIO connection.
+<pre class="easycode; title:;lang:;">#print message at the begining ---custom function
+def print_message():
+    print ('|**********************************|')
+    print ('|           Breath LED             |')
+    print ('|  ----------------------------    |')
+    print ('|      LED Connect to GPIO1        |')
+    print ('|  ----------------------------    |')
+    print ('|                                  |')
+    print ('|                            OSOYOO|')
+    print ('|**********************************|\n')
+    print ('Program is running...')
+    print ('Please press Ctrl+C to end the program...')
+    pass</pre>
+c)setup()  fucntion to set the LEDPIN to be PWM output, set innitial level as LOW LEVEL(0V) and the PWM frequence is 100hz, for more information about RPI.GPIO function, please visit <a href="https://sourceforge.net/p/raspberry-gpio-python/wiki/BasicUsage/">https://sourceforge.net/p/raspberry-gpio-python/wiki/BasicUsage/</a>.
+<pre class="easycode; title:;lang:;">#setup function for some setup---custom function
+def setup():
+    global p
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    #set all LedPin's mode to output,and initial level to HIGH(3.3V)
+    GPIO.setup(LEDPIN,GPIO.OUT,initial=GPIO.LOW)
+
+    #set LEDPIN as PWM output,and frequency=100Hz
+    p = GPIO.PWM(LEDPIN,100)
+    #set p begin with ualue 0
+    p.start(0)
+    pass</pre>
+d) in while loop use The <a href="https://docs.python.org/3/tutorial/controlflow.html#for-statements">for</a> statement to set the LED light intensity start  from zero  to 100 by increase 4 every time  , then from 100 to zero by decrease 4 everytime.</font>
+<pre class="easycode; title:;lang:;"> def main():
+    #print info
+    print_message()
+    while True:
+        print("|****************************|")
+        print("|    Increase duty cycle     |")
+        print("|****************************|")
+        #increase duty cycle from 0 to 100
+        for dc in range(0,101,4):
+            #chang duty cycle to dc
+            p.ChangeDutyCycle(dc)
+            time.sleep(0.1)
+            pass
+        print("|****************************|")
+        print("|    Decrease duty cycle     |")
+        print("|****************************|")
+        #decrease duty cycle from 100 to 0
+        for dc in range(100,-1,-4):
+            #change duty cycle to dc
+            p.ChangeDutyCycle(dc)
+            time.sleep(0.1)
+            pass
+        pass
+    pass</pre><center>
+<h2><a href="../Lesson 5 Flowing LED/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\9.jpg" alt=".\image\9.jpg" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\10.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 7 Raspberry Pi Button Control LED/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\11.jpg" alt="" width="156" height="41" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

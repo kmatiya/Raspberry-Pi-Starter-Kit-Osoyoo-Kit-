@@ -1,0 +1,139 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 3: Prepare GPIO Tool-WiringPi Utility</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 3: Prepare GPIO Tool-WiringPi Utility</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_3_Prepare_GPIO_Tool-WiringPi_Utility.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction for WiringPi</a></strong></li>
+<li><strong><a href="#2">Test wiringPi exist or not</a></strong></li>
+<li><strong><a href="#3">Install wiringPi through git</a></strong></li>
+<li><strong><a href="#4">Sample project for WiringPi</a></strong></li>
+</ul>
+<p>In previous lesson <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html" target="_blank" rel="noopener noreferrer">Introduction Of Raspberry Pi GPIO</a> , we learned what is GPIO pins ,GPIO naming and location map in Raspberry Pi. Now we start to learn how to program GPIO pins and control outside device through GPIO.</p>
+<p><a id="1"></a><strong>Introduction for WiringPi</strong></p>
+<p>If you want to use Raspberry Pi to control other devices such as sensors, motors, LEDs etc, you need to exchange signal with these devices. This is called Input/Output(I/O). That is the job of GPIO pins.</p>
+<p>In order to send/get data from GPIO pins, theoretically  people can use ARM Assembly or C language to directly access the I/O address, registers, memories or trigger related I/O interrupt. However, such programming practice is super complicated, inconvenient and requires deep understanding about ARM CPU hardware detail.</p>
+<p>Fortunately,  experts invented a developing tool called "utility" or "library". With the help of utility/library, complicated I/O detail programming are sealed into some black boxes called "Functions" which makes GPIO programming  simple and easy.</p>
+<p>There are many free Open source GPIO libraries in the Internet. In this lesson, we will teach you how to install "<strong>wiringPi</strong>" library which is very popular among  C programmers.</p>
+<p>We don't want to talk much of the technical detail about wiringPi. If you want to get more wiringPi information , please read  following link: <strong>http://wiringpi.com/the-gpio-utility/</strong></p>
+<p><strong>Test wiringPi exist or not</strong></p>
+<p>You can test whether the <strong>wiringPi</strong> library has already been installed  by running following command in terminal：</p>
+<strong><span style="color: #ff00ff;">gpio  -v
+</span></strong>
+<p>If the message appears in your terminal, the wiringPi is installed in your Pi.<br />
+<center><img class=" aligncenter" src=".\image\1.jpg" width="543" height="218" /></p></center>
+<p>If the message appears as follow, the wiringPi has not been installed yet.<br />
+<center><img class="size-medium aligncenter" src=".\image\2.jpg" width="540" height="120" /></p></center>
+<p><strong>Install wiringPi through git</strong></p>
+<p>Step 1) Update your pi package repository (these 2 commands are recommended to do regularly)<span style="color: #ff00ff;"><br />
+sudo apt-get update<br />
+sudo apt-get upgrade<br />
+</span><br />
+Step 2)Install <strong>git</strong> if you don't have it<br />
+Please run the following command to install <strong>git</strong> (if you have installed <strong>git</strong>, please skip this step):</p>
+<strong><span style="color: #ff00ff;">sudo apt-get install git-core</span></strong>
+<p><span style="color: #000000;">Step 3)Obtain WiringPi using GIT:</span></p>
+<span style="color: #ff00ff;"><strong>cd ~
+git clone git://git.drogon.net/wiringPi
+</strong></span>
+<p>If you have already used the clone operation, then</p>
+<span style="color: #ff00ff;"><strong>cd ~/wiringPi 
+git pull origin
+</strong></span>
+<p><span style="color: #000000;">Will fetch an updated version then you can re-run the build script below.<br />
+To build/install there is a new simplified script:<br />
+</span></p>
+<span style="color: #ff00ff;"><strong>cd ~/wiringPi
+./build
+</strong></span>
+<p>The new build script will compile and install it all for you – it does use the sudo command at one point, so you may wish to inspect the script before running it.</p>
+<p>Note that the actual filename will be different – you will have to check the name and adjust accordingly.</p>
+<p><strong>Sample project for WiringPi</strong></p>
+<p>After installation wirngPi, you can test a project with LED on your raspberry Pi via wiringPi.</p>
+<p>1) Experimental Principle<br />
+Connect LED with raspberry Pi GPIO, and then the program output high or low level to this GPIO to control the LED blink.<br />
+<center><img class=" aligncenter" src=".\image\3.jpg" width="732" height="241" /></p></center>
+<p><strong>B17</strong> in above graph means BCM GPIO#17 or Physical pin#11 or wiringPi#0(zero).</p>
+<p><strong>Note:</strong> B means BCM(Broadcom pin number). If you don’t know what is BCM pin#, Physical pin#, wiringPi#, please review our <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">lesson 2: Introduction Of Raspberry Pi GPIO</a></p>
+<p>2) Connection Graph<br />
+<center><a href=".\image\4.jpg"><img class="aligncenter wp-image-8029 size-large" src=".\image\4.jpg" alt="" width="1024" height="395" /></a></p></center>
+<p>3)<span style="color: #000000;">Create a new file testwiringpi.c (you can name the file as you like) at the direction of /home/pi<br />
+</span></p>
+<span style="color: #ff00ff;"><strong>cd ~
+sudo  nano  testwiringpi.c
+</strong></span>
+<p>Copy the following code to testwiringpi.c</p>
+<pre class="easycode; title: testwiringpi.c;lang:;">#include < wiringPi.h>
+#include < stdio.h>
+
+#define LEDPIN  0 //LEDPIN is wiringPi Pin#0 or physical pin#11 or GPIO#17
+
+int main(){
+    //when initialize wiring failed,print message to screen
+    if(wiringPiSetup()== -1){
+        printf("Setup wiringPi Failed!");
+        return -1;
+    }
+
+    pinMode(LEDPIN,OUTPUT);
+    printf("\n");
+    printf("\n");
+    printf("********************************|\n");
+    printf("|       LED Blink               |\n");
+    printf("|  -----------------------      |\n");
+    printf("|                               |\n");
+    printf("|   LED connect to wiringPi# 0  |\n");
+    printf("|                               |\n");
+    printf("|   LED will blink at 500ms     |\n");
+    printf("|   OSOYOO.COM                  |\n");
+    printf("********************************|\n");
+
+    while(1){
+        digitalWrite(LEDPIN,LOW);
+        printf("...LED OFF\n");
+        printf("\n");
+        delay(500);
+        digitalWrite(LEDPIN,HIGH);
+        printf("LED ON...\n");
+        printf("\n");
+        delay(500);
+    }
+    return 0;
+}</pre>
+<p>Add wiringPi and stdio file which is used in this project at the beginning of the code. the LED connect with wPi#0 (physical pin#11 or GPIO/BCM 17). there are three ways of naming including physical, wiringPi and BCM. To learn more information about raspberry Pi GPIO, please visit: <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">Lesson 2 Introduction of Raspberry Pi GPIO</a>. You can enter the following command to see the GPIO layout</p>
+<span style="color: #ff00ff;"><strong>gpio readall
+</strong></span>
+<center><p><a href=".\image\5.jpg"><img class="aligncenter wp-image-7059 size-full" src=".\image\5.jpg" alt="" width="643" height="433" /></a></p></center>
+<p>Main function main() invokes print_message() function first, and the terminal will show the print message, and then set LEDPIN as output mode, at last, go on while loop statement and conditionals. The program will change Led pin level times and times to make the LED blink and send print message to terminal.<br />
+Note: Use the following command to download /testwiringpi.c code(replace the step of copying the code to nano editor )</p>
+<span style="color: #ff00ff;"><strong>wget http://osoyoo.com/driver/pi3_start_learning_kit_lesson_3/testwiringpi.c
+</strong></span>
+<p>3)Compile Code</p>
+<span style="color: #ff00ff;"><strong>gcc -Wall -o app testwiringpi.c -lwiringPi
+</strong></span>
+<p><strong>Explanation</strong>: C language is high level language. Before running the project, the code need to compile as an executable file.<br />
+<span style="color: #ff00ff;"><strong>gcc: </strong></span>is GNU Compiler Collection. If you want to write your own C code and compile to run it, you need to master gcc.<br />
+<span style="color: #ff00ff;"><strong>-Wall:</strong></span> to get more error when compile the code<br />
+<span style="color: #ff00ff;"><strong>-o</strong></span>: to name the compiled file. You can name the file as your like. here we name as app<br />
+<span style="color: #ff00ff;"><strong>testwiringpi.c</strong></span>: means the original file which is compiled<br />
+<span style="color: #ff00ff;"><strong>-lwiringPi</strong></span>: is to load the library wiringPi (l is short for library)</p>
+<p>4)Run Project, enter the following command and press “enter” to run the project</p>
+<strong><span style="color: #ff00ff;">sudo  ./app</span></strong>
+<center><p><a href=".\image\6.jpg"><img class="aligncenter size-full wp-image-8147" src=".\image\6.jpg" alt="" width="641" height="338" /></a></p></center>
+<p>5)After running the code, your terminal will show print message as codef firstly, and then the LED blink and the ternimal will show LED status.</p>
+<center><p><a href=".\image\7.jpg"><img class="aligncenter size-full wp-image-8147" src=".\image\7.jpg" alt="" width="641" height="338" /></a></p></center>
+<center><a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\8.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\9.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 4 Python Light LED/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\10.jpg" alt="" width="156" height="41" /></a></font></center>

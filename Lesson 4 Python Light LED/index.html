@@ -1,0 +1,126 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 4: Python Light LED</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 4: Python Light LED</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_4_Python_Light_LED.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction of python</a></strong></li>
+<li><strong><a href="#2">RPi.GPIO API (library)</a></strong></li>
+<li><strong><a href="#3">Python IDLE</a></strong></li>
+<li><strong><a href="#4">Sample Project to use RPi.GPIO</a></strong></li>
+<li><strong><a href="#5">Python Code explanation</a></strong></li>
+</ul>
+<p><a id="1"><strong>Introduction of python</a></strong><br />
+<center><img class="alignnone " src=".\image\1.jpg" width="576" height="124" /></p></center>
+<p>In previous lesson - <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html" target="_blank" rel="noopener noreferrer">Prepare GPIO tool-WiringPi utility</a> , We learned how to use WiringPi and C langugage to control GPIO and light a LED. In this lesson, we will do same job through another powerful programming language - <strong>Python.</strong></p>
+<p><strong>Python</strong> is a programming language which can run Linux, Windows, Mac iOS. To learn more about Python, please visit Python official website: <strong>https://www.python.org/about/</strong>
+<p><a id="2"><strong>RPi.GPIO API (library)</a></strong><br />
+</strong>For a C programmer, the most frequently used GPIO library is WiringPi which is taught in our previous lesson. If programming language changes to Python, normally we use another GPIO library called <strong>RPi.GPIO </strong>which comes with Raspbian Jessie OS .</p>
+<p><em>*<strong>RPi.GPIO</strong> pin definition is different from <strong>wiringPi</strong>. To learn the <strong>RPi.GPIO</strong> pin definition detail, please read our <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html" target="_blank" rel="noopener noreferrer">Lesson Two: Introduction Of Raspberry Pi GPIO</a> carefully.</em></p>
+<p>The Raspbian Jessie 2015-05-27 release or above has RPi.GPIO pre-installed, and you can use it directly. In the subsequent tutorials, the RPi.GPIO will be used to program Raspberry pi GPIO from time to time. To learn more about RPi.GPIO, please visit <strong>https://pypi.python.org/pypi/RPi.GPIO</strong>.</p>
+<p>To test whether Python RPi.GPIO library is installed , you need start  <strong>python</strong> by typing <em>python </em>in  terminal (see following picture)<br />
+<center><a href=".\image\2.jpg"><img class="wp-image-7499 size-full aligncenter" src=".\image\2.jpg" alt="" width="638" height="86" /></a></p></center>
+<p>And then, type <strong>import RPi.GPIO</strong>. If no error prompts, it means RPi.GPIO is installed.<br />
+<center><a href=".\image\3.jpg"><img class="wp-image-7500 aligncenter" src=".\image\3.jpg" alt="" width="637" height="114" /></a></p></center>
+<p>At last, type <strong>RPi.GPIO.VERSION. </strong>If it shows its version like below, your Pi is ready to go!<br />
+<center><a href=".\image\4.jpg"><img class="aligncenter wp-image-7501 size-full" src=".\image\4.jpg" alt="" width="639" height="131" /></a></p></center>
+<p><a id="3"><strong>Python IDLE</a></strong><br />
+In above testing Python examples, we run Python program through terminal commands. This kind of primitive programming method is not convenient to manage and debug our code.</p>
+<p>Thanks to the Python experts' effort, we now have an advance tool called Development and Learning Environment(IDLE) for Python.  You no need remember any running and compiling command. It is a Graphic User Interface(GUI) which is easy to use and convenient for debug.</p>
+<p>Raspbian Jessie PIXEL Operation System comes with python IDLE . You can open IDLE from applications menu -> Programming -> Python 3(IDLE) as following picture:<br />
+<center><img class="size-medium aligncenter" src=".\image\5.jpg" width="400" height="370" /><br /></center>
+There are two version IDLE, python2 and python3. Recommend the new version-python 3, because program via python3 can't run via python2. To Learn more about IDLE， please visit <strong>https://www.raspberrypi.org/documentation/usage/python/</strong>
+<p><a id="4"><strong>Sample Project to use RPi.GPIO</a></strong><br />
+In following tutorial, we use IDLE to make a Python program to control a LED which was done through C language in our previous <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html">Lesson 3</a> .</p>
+<p><strong>1)Experimental Principle</strong><br />
+Connect LED to raspberry Pi GPIO, and then the program output high or low level to this GPIO to control the LED blink.<br />
+<center><img class="aligncenter" src=".\image\6.jpg" alt="" width="897" height="305" /></p></center>
+<pre>**B17 in above graph is the physical pin#11,  wiringPi Pin# 0,BCM pin# 17</pre>
+<p><strong>Note:</strong> B means BCM(Broadcom pin number). If you don’t know what is BCM pin#, Physical pin#, wiringPi#, please review our <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">lesson 2: Introduction Of Raspberry Pi GPIO</a></p>
+<pre></pre>
+<p><strong>2)Connection Graph</strong><br />
+<center><a href=".\image\7.jpg"><img class="aligncenter wp-image-8029 size-large" src=".\image\7.jpg" alt="" width="1024" height="395" /></a></p></center>
+<p><strong>3) Running the Python program</strong><br />
+<strong>Method A: </strong>Running Python code in IDLE<strong><br />
+</strong>If Raspberry pi connects to a monitor, you're recommended to take the following steps.<br />
+a) Open IDLE，click File->New File to open a new window, and copy <a href=".\Python code\pythontest.py">the code</a> in this window. Or donwload the <a href=".\Python code\pythontest.py">pythontest.py</a> file and double click it to open<br />
+<center><a href=".\image\8.jpg"><img class="aligncenter size-large wp-image-8049" src=".\image\8.jpg" alt="" width="1024" height="534" /></a><br /></center>
+b)Press "ctrl" + "S" to save the program in the path /home/pi(default) or other path as you like. Keep the file extension(.py or pyw) and name the file as you like when saving the file. For example, the file is named as pythontest.py in the following photo:<br />
+<center><a href=".\image\9.jpg"><img class="aligncenter size-large wp-image-8047" src=".\image\9.jpg" alt="" width="1024" height="535" /></a><br /></center>
+c) After saving the file, please click F5 or clickRun->Run Module F5 to run this project<br />
+<center><a href=".\image\10.jpg"><img class="aligncenter size-large wp-image-8048" src=".\image\10.jpg" alt="" width="1024" height="532" /></a></p></center>
+<p><strong>Method B) </strong>Running Python code in command line<strong><br />
+</strong>If your Pi is not connected to monitor or  you are accessing Raspberry Pi remotely, you can  running the Python  program as following steps:<br />
+a) Run the following command to create and download /pythontest.py code<br />
+<strong><span style="color: #ff00ff;">cd ~</span></strong><br />
+<span style="color: #ff00ff;"><strong>wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_4/pythontest.py</strong></span></p>
+<p>b) Run the following command to run the project<br />
+<strong><span style="color: #ff00ff;">sudo python ./pythontest.py</span></strong><br />
+<center><a href=".\image\11.jpg"><img class="aligncenter size-full wp-image-8050" src=".\image\11.jpg" alt="" width="820" height="239" /></a></p></center>
+<p><strong>5) Python code running result<br />
+</strong>After running the code, your terminal will show print message as codef firstly, and then the LED blink and the ternimal will show LED status.<br />
+<center><a href=".\image\12.jpg"><img class="aligncenter size-full wp-image-8052" src=".\image\12.jpg" alt="" width="820" height="352" /></a><br /></center>
+<center><a href=".\image\13.jpg"><img class="aligncenter size-large wp-image-8053" src=".\image\13.jpg" alt="" width="820" height="457" /></a><br /></center>
+<a id="5"><strong>Python Code explanation</a></strong></p>
+<pre class="easycode; title:;lang:;">import RPi.GPIO as GPIO
+import time
+# set GPIO 0 as LED pin
+LEDPIN = 17</pre>
+<p>Import is keyword which  adds a specific library into Python environment, "import RPi.GPIO as GPIO" will add RPi.GPIO library and "Import time" will add time module library.</p>
+<p><em>Python RPi.GPIO use BCM naming system, "LEDPIN = 17</em> " we will use BCM pin#17 to send signal.<br />
+BCM Pin#17, physical pin# is 11, in wiringPi, its name is GPIO. 0 or pin# 0. Learn more information about <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html">Raspberry Pi GPIO</a>. You can run the command <span style="color: #ff00ff;"><strong>gpio readall</strong></span>to see the GPIO layout.<br />
+<center><a href=".\image\14.jpg"><img class="aligncenter wp-image-7059 size-full" src=".\image\14.jpg" alt="" width="643" height="433" /></a></p></center>
+<pre class="easycode; title:;lang:;">#print message at the beginning ---custom function
+def print_message():
+    print ('|*********************************|')
+    print ('|            blink LED            |')
+    print ('|   -------------------------     |')
+    print ('|      LED connect to GPIO        |')
+    print ('|                                 |')
+    print ('|      LED will blink at 500ms    |')
+    print ('|   -------------------------     |')
+    print ('|                                 |')
+    print ('|                          OSOYOO |')
+    print ('**********************************\n')
+    print ('Program is running...')
+    print ('Please press Ctrl+C to end the program...')</pre>
+<p>Def means definition of a function.<br />
+Print_message is a custom (edited by yourself) function, and show print message on the terminal. To learn more information about function definition, please visit <strong>https://www.tutorialspoint.com/python/python_functions.htm</strong></p>
+<pre class="easycode; title:;lang:;">#setup function for some setup---custom function
+def setup():
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    #set LedPin's mode to output,and initial level to LOW(0V)
+    GPIO.setup(LEDPIN,GPIO.OUT,initial=GPIO.LOW)</pre>
+<p>GPIO.setmode(GPIO.BCM) function sets up BCM numbering method as GPIO numbering method. GPIO.setup(LedPin,GPIO.OUT,initial=GPIO.LOW) function sets up LedPin as output mode and set low level as LedPin’s initial level.</p>
+<pre class="easycode; title:;lang:;">#main function
+def main():
+    #print info
+    print_message()
+    while True:
+       GPIO.output(LEDPIN,GPIO.HIGH)
+       print('...LED ON\n')
+       time.sleep(0.5)
+       
+       GPIO.output(LEDPIN,GPIO.LOW)
+       print('LED OFF...\n')
+       time.sleep(0.5)
+       pass
+    pass</pre>
+<p>Main function will change Led pin level times and times to make the LED blink and send print message to terminal.</p>
+<center><a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\15.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\16.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 5 Flowing LED/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\17.jpg" alt="" width="156" height="41" /></a></font></center>

@@ -1,0 +1,56 @@
+﻿<html>
+<head>
+<title>Lesson 22: 8 Channel Logic Level Converter</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 22: 8-Channel Logic Level Converter</h1>
+<h3>Overview</h3>
+<p>Raspberry Pi GPIO pin  working voltage is 3.3v.  However, many sensors and devices (especially those designed for Arduino) work at 5V.  The 8 Channel Logic Level Converter is a bridge to connect 3.3V i/o pins to 5V pins. 3.3v signal input to Ax pins can automatically be converted to 5v output to Bx pins and 5V input signal to Bx pin can also be covert to 3.3v to its counterpart Ax pins.</p>
+<p>In this project, we will show how to this 8 Channel Logic Level Converter convert Raspberry Pi 3.3V signal to 5V output.
+</p>
+<h3>Features</h3>
+<ul>
+<li>8 channels bidirectional voltage translation between different logic level, translate between Ax and Bx automatically</li>
+<li>4 pairs of power supply interfaces, supports more situations</li>
+<li>Voltage level: 1.8V-6V</li>
+</ul>
+<p><strong>Hardware Preparation:</strong></p>
+<p>1 * Raspberry Pi<br />
+1 * Breadboard<br />
+Some Jumper wires<br />
+1 * T-Extension Board<br />
+1 * 8 Channel Logic Level Converter<br />
+1 * multimeter</p>
+<h3>Test</h3>
+<p>Assembling the circuit as followed connection graph:</p>
+<p><center><a href=".\image\1.jpg"><img class="aligncenter wp-image-11572 size-full" src=".\image\1.jpg" alt="" width="1000" height="1000" /></a></center></p>
+<ul>
+<li>VCCA/VA connects to 3.3V power supply</li>
+<li>VCCB/VB connects to 5V power supply</li>
+<li>GND connects to power negative pole respectively, the two power supply should be common-grounded with each other</li>
+<li>When Ax has TTL 3.3V input, Bx will get TTL 5V output</li>
+<li>When Bx has TTL 5V input, Ax will get TTL 3.3V output</li>
+</ul>
+<p>In this example, we will connect B4 to 5V, then use multimeter to test A4 output voltage.</p>
+<p>Firstly, set the multimeter to “6V” in the DC range (Different Multimeters has different scale. You have to set the multimeter to a range that it can measure.  here we need to measure 3.3v, so we set to 6V which can measures voltages up to 6 volts)</p>
+<p><center><a href=".\image\2.jpg"><img class="wp-image-11574 size-large aligncenter" src=".\image\2.jpg" alt="" width="575" height="1024" /></a></center></p>
+<p>Connect the black probe to Raspberry pi "GND" and the red probe to 8 Channel Logic Level Converter "A4"</p>
+<p><center><a href=".\image\3.jpg"><img class="wp-image-11577 size-large aligncenter" src=".\image\3.jpg" alt="" width="575" height="1024" /></a></center></p>
+<p>If you set it incorrectly, you will probably see the meter screen change and then read about ‘3.3’.  This means the 8 Channel Logic Level Converter has converted signals from 5V down to 3.3V.</p>
+<center><h2><a href="../Lesson 21 Make IOT Home Alarm System with Pi/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\6.jpg" alt="" width="156" height="41" /></a>            <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\7.jpg" alt="" width="236" height="39" /></a></h2></center>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+

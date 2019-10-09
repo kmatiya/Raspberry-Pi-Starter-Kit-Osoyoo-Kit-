@@ -1,0 +1,217 @@
+﻿<font face=Arial><head>
+<title>Raspberry Pi Starter Kit Lesson 7: Raspberry Pi Button Control LED</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html">Back to Raspberry Pi Starter kit Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 7: Raspberry Pi Button Control LED</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\videos\Lesson_7_Raspberry_Pi_Button_Control_LED.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Introduction</a></strong></li>
+<li><strong><a href="#2">Hardware Preparation</a></strong></li>
+<li><strong><a href="#3">Software Preparation</a></strong></li>
+<li><strong><a href="#4">Experimental Principle</a></strong></li>
+<li><strong><a href="#5">Hardware Setup</a></strong></li>
+<li><strong><a href="#6">Software</a></strong></li>
+<li><strong><a href="#7">For C Language users</a></strong></li>
+<li><strong><a href="#8">C language sample code and Explanation comments</a></strong></li>
+<li><strong><a href="#9">For Python Language users</a></strong></li>
+<li><strong><a href="#10">Python Code Explanation</a></strong></li>
+</ul>
+<p><a id="1"></a><strong>Introduction</strong><br />
+The last two lessons have introduced how to program Raspberry Pi to output signal and  turn on LED. In this lesson, we will show you how to get input signal from Button switch and trigger output to turn on LED via program.</p>
+<p><a id="2"></a><strong>Hardware Preparation</strong><br />
+1 * Raspberry Pi<br />
+1 * Breadboard<br />
+1 * LED<br />
+1 * Button<br />
+1 * Resistor (200Ω)<br />
+1 * Resistor (10KΩ)<br />
+Jumper wires<br />
+1 * T-Extension Board with 40-Pin Cable(Optional)</p>
+<p><a id="3"></a><strong>Software Preparation</strong><br />
+<strong><span style="color: #ff0000;">Note:</span></strong> In this lesson, we remotely control raspberry pi via PuTTy on PC. To learn how to config raspberry pi, please visit <a href="../Lesson 1 Get Started with Raspberry Pi/index.html">lesson 1: getting started with raspberry pi</a>.</p>
+<p><a id="4"></a><strong>Experimental Principle</strong></p>
+<p>The button is a common component, and works as a switch to turn on or off circuit. The button in our kit has 4 pins, as photo shows:</p>
+<center><p><a href=".\image\1.jpg"><img class="aligncenter" src=".\image\1.jpg" alt="" width="450" height="211" /></a><br /></center>
+Pin 1 and Pin 2 are conductive， and Pin 3 and Pin 4 are conductive. After pressing button, Pin 1 and Pin 3 become conductive and Pin 2 and Pin 4 become conductive. As photo shows:<br />
+<center><a href=".\image\2.jpg"><img class="aligncenter" src=".\image\2.jpg" alt="" width="555" height="411" /></a></p></center>
+<p style="text-align: center;">Not Press the button</p>
+<center><p><a href=".\image\3.jpg"><img class="aligncenter" src=".\image\3.jpg" alt="" width="549" height="397" /></a></p></center>
+<p style="text-align: center;">Pressed the button</p>
+<p>For this project, connect the button to B17, and the LED to B18 as the following circuit graph:<br />
+<center><a href=".\image\4.jpg"><img class="aligncenter size-medium" src=".\image\4.jpg" width="853" height="493" /></a><br /></center>
+<strong>B17</strong> for the button in above graph means BCM GPIO#17 or Physical pin#11 or wiringPi#0(zero). <strong>B18</strong> for the LED in above graph means BCM GPIO#18 or Physical pin#12 or wiringPi#1.<br />
+<strong><span style="color: #ff0000;">Note:</span></strong> B means BCM(Broadcom pin number). If you don’t know what is BCM pin#, Physical pin#, wiringPi#, please review our lesson 2: <a href="../Lesson 2 Introduction of Raspberry Pi GPIO/index.html" target="_blank" rel="noopener noreferrer">Introduction Of Raspberry Pi GPIO</a></p>
+<p>If the button is not pressed , B17(wiringPi#0(zero)) input voltage is pulled up to 3.3V through  10K resistor . Once our sample code reads high voltage from B17, it will output high level to B18(wiringPi#1) which will turn off LED.<br />
+If  the button is pressed , the B17(wiringPi#0(zero)) input is set to zero(connect to GND) , sample code will output  zero voltage to B18(wiringPi#1) which turns the LED on.</p>
+<p><a id="5"></a><strong>Hardware Setup</strong><br />
+Assembling the Circuit as followed Connection Graph<br />
+<center><a href=".\image\5.jpg"><img class="aligncenter size-large wp-image-8442" src=".\image\5.jpg" alt="" width="1024" height="418" /></a></p></center>
+<center><p><a href=".\image\6.jpg"><img class="aligncenter size-large wp-image-8443" src=".\image\6.jpg" alt="" width="1024" height="576" /></a></p></center>
+<p><a id="6"></a><strong>Software</strong><br />
+We’ll provide two kinds of codes for C language users and Python language users.</p>
+<p><a id="7"></a><strong>For C Language users，please follow the next steps:</strong></p>
+<hr />
+<p>Note: please be sure installation wiringpi. Click <a href="../Lesson 3 Prepare GPIO Tool-WiringPi Utility/index.html">here</a>, you can learn more about how to check whether installing wiringpi and install wiringpi</p>
+<p><strong>Step 1) Download sample code button_led.c from osoyoo.com by typing following commands in terminal:</strong><br />
+<span style="color: #ff00ff;"><strong><span style="color: #000000;">pi@raspberry:~ $</span> cd  ~</strong></span><br />
+<strong>pi@raspberry:~ $ <span style="color: #ff00ff;">sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_7/button_led.c</span></strong><br />
+<center><a href=".\image\7.jpg"><img class="aligncenter size-large wp-image-8444" src=".\image\7.jpg" alt="" width="1024" height="355" /></a></p></center>
+<p><span style="color: #ff0000;"><strong>Note:</strong> </span><br />
+If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:<br />
+<strong>pi@raspberry:~ $ <span style="color: #ff00ff;">sudo  nano button_led.c</span><br />
+</strong><br />
+<center><a href=".\image\8.jpg"><img class="aligncenter size-large wp-image-8445" src=".\image\8.jpg" alt="" width="1024" height="548" /></a></p></center>
+<p><strong>Step 2) Compile code</strong><br />
+<strong>pi@raspberry:~ $ </strong><span style="color: #ff00ff;"><strong>gcc  -Wall  -o button_led  button_led.c  -lwiringPi</strong></span><br />
+<strong><span style="color: #ff0000;">Note:</span> gcc: </strong>is GNU Compiler Collection. If you want to write your own C code and compile to run it, you need to master gcc. for more information about gcc, please visit <strong>https://gcc.gnu.org/onlinedocs/gcc-2.95.2/gcc_2.html</strong><br />
+<strong>-Wall:</strong> to get more error when compile the code<br />
+<strong>-o</strong>: to name the compiled file. You can name the file as your like. here we name as button_led<br />
+<strong>button_led.c</strong>: means the original file which is compiled<br />
+<strong>-lwiringPi</strong>: is to load the library wiringPi (l is short for library)</p>
+<p><strong>Step 3) Run the program</strong><br />
+<span style="color: #ff00ff;"><strong><span style="color: #000000;">pi@raspberry:~ $</span> sudo  ./button_led</strong></span><br />
+<center><a href=".\image\9.jpg"><img class="aligncenter size-large wp-image-8446" src=".\image\9.jpg" alt="" width="1024" height="490" /></a></p></center>
+<p><strong>Step 4) Program result</strong><br />
+Once program starts running, the terminal will show print message as code firstly, and then show LED off. When pressing the button, the LED will turn on and the terminal shows LED On. when releasing the button, the LED will turn off and the terminal shows LED Off.  If you wan’t to stop the program, please go to terminal and type command: Ctrl + C.<br />
+<center><a href=".\image\10.jpg"><img class="aligncenter size-large wp-image-8447" src=".\image\10.jpg" alt="" width="1024" height="768" /></a></p></center>
+<p><a id="8"></a><strong>C languange sample code and </strong><b>Explanation comments</b></p>
+<pre class="easycode; title:;lang:;">#include < wiringPi.h>
+#include < stdio.h>
+#include < stdlib.h>
+
+//setup wirping#0(BCM_GPIO17) as Button pin
+#define  ButtonPin   0
+//setup wiringPi#1(BCM_GPIO18) as LED pin
+#define  LedPin      1
+
+int main(void){
+    // When initialize wiring failed, print messageto screen
+    if(wiringPiSetup() == -1){
+        printf("setup wiringPi failed!");
+        exit(1); 
+    }
+    //set LedPin BCM18 working at OUTPUT mode
+    pinMode(LedPin, OUTPUT); 
+    //set ButtonPin BCM17 working at INPUT mode
+    pinMode(ButtonPin, INPUT);
+
+    // Pull up to 3.3V,make GPIO1 a stable level
+    pullUpDnControl(ButtonPin, PUD_UP);
+
+    printf("\n");
+    printf("|**************************************|\n");
+    printf("|          Button control LED          |\n");
+    printf("|    ------------------------------    |\n");
+    printf("|         LED connect to GPIO1         |\n");
+    printf("|        Button connect to GPIO0       |\n");
+    printf("|                                      |\n");
+    printf("|     Press button to turn on LED.     |\n");
+    printf("|                                      |\n");
+    printf("|                                OSOYOO|\n");
+    printf("|**************************************|\n");
+    printf("\n");
+
+    digitalWrite(LedPin, HIGH);
+    printf("|****************|\n");
+    printf("|   LED off...   |\n");
+    printf("|****************|\n");
+
+    for(;;){
+        // Indicate that button has pressed down
+        if(digitalRead(ButtonPin) == 0){
+            // Led on
+            digitalWrite(LedPin, LOW);
+            printf("|****************|\n");
+            printf("|   ...LED on    |\n");
+            printf("|****************|\n");
+            delay(400);
+        }
+        else{
+            // Led off
+            digitalWrite(LedPin, HIGH);
+            printf("|****************|\n");
+            printf("|   LED off...   |\n");
+            printf("|****************|\n");
+            delay(400);
+        }
+    }
+    return 0;
+}</pre>
+<p><a id="9"></a><strong>For Python Language users, please follow the below step:</strong></p>
+<hr />
+<p>When programming with Python language , normally we use GPIO library called <strong>RPi.GPIO </strong>which comes with Rasbian Jessie OS. Click <a href="../Lesson 4 Python Light LED/index.html">here</a>, and you can learn more about RPI.GPIO and Python.</p>
+<p><strong>Step 1)  Download sample python code to /home/pi by following terminal command:</strong><br />
+<span style="color: #ff00ff;"><strong><span style="color: #000000;"> pi@raspberry:~ $ </span>cd   ~</strong></span><br />
+<span style="color: #ff00ff;"><strong><span style="color: #000000;"> pi@raspberry:~ $ </span>sudo  wget  http://osoyoo.com/driver/pi3_start_learning_kit_lesson_7/button_led.py</strong></span><br />
+<center><a href=".\image\11.jpg"><img class="aligncenter size-large wp-image-8450" src=".\image\11.jpg" alt="" width="1024" height="351" /></a></p></center>
+<p><span style="color: #ff0000;"><strong>Note:</strong> </span><br />
+If you want to customize the sample code file , you can use nano editor to edit source code by typing following command in terminal:<br />
+<strong>pi@raspberry:~ $ <span style="color: #ff00ff;">sudo  nano button_led.py</span></strong><br />
+<center><a href=".\image\12.jpg"><img class="aligncenter size-large wp-image-8451" src=".\image\12.jpg" alt="" width="1024" height="550" /></a></p></center>
+<p>Step 2) Run program<br />
+<span style="color: #ff00ff;"><strong><span style="color: #000000;"> pi@raspberry:~ $  </span>sudo  python  ./button_led.py</strong></span><br />
+<center><a href=".\image\13.jpg"><img class="aligncenter size-large wp-image-8452" src=".\image\13.jpg" alt="" width="1024" height="532" /></a></p></center>
+<p>Step 3) Program result<br />
+Once program starts running, the terminal will show print message as code firstly. When pressing the button, the LED will turn on and the terminal shows LED On. when pressing the button again, the LED will turn off and the terminal shows LED Off.  If you wan’t to stop the program, please go to terminal and type command: Ctrl + C.<br />
+<center><a href=".\image\14.jpg"><img class="aligncenter size-large wp-image-8448" src=".\image\14.jpg" alt="" width="1024" height="768" /></a></p></center>
+<p><strong>Python Code </strong><b>Explanation</b></p>
+<pre class="easycode; title:;lang:;">import RPi.GPIO as GPIO
+import time
+
+#set BCM_GPIO 17(GPIO0) as button pin
+ButtonPin = 17
+#set BCM_GPIO 18(GPIO1) as LED pin
+LedPin = 18
+
+#set led status to True(OFF)
+led_status = True</pre>
+<p><strong>a. Import Python GPIO Library and time library. The GPIO library is the library for interacting with the GPIO in Python. It does the job of simplifying the process. The time library is there so we can put a delay in, otherwise the blink might be too fast to notice.Define LED and button GPIO (Here we use BCM#) and set True(3.3V) as the LED's initial status.</strong></p>
+<pre class="easycode; title:;lang:;"> def setup():
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    #set all LedPin's mode to output,and initial level to HIGH(3.3V)
+    GPIO.setup(LedPin,GPIO.OUT,initial=GPIO.HIGH)
+    #set ButtonPin's mode to input,and pull up to high(3.3v)
+    GPIO.setup(ButtonPin,GPIO.IN,pull_up_down = GPIO.PUD_UP)
+    #set up a falling detect on ButtonPin,and callback function to ButtonLed
+    GPIO.add_event_detect(ButtonPin,GPIO.FALLING,callback = ButtonLed)
+    pass</pre>
+<p><strong>b. pinMode(ButtonPin, INPUT) and pullUpDnControl(ButtonPin, PUD_UP) set ButtonPin pull-up input. The program gets a level from buttonpin times and times. While the button is pressed, the program gets low level, and it output low level to LEDPin, and then the LED will turn on. Else, the LedPin gets high level, and the LED turn off. setup function set LEDPin as output mode, and button as pull-up input mode and set up a falling detect on ButtonPin. When raspberry pi detects ButtonPin falling off, the program will go back callback function to implement breakoff code.</strong></p>
+<pre class="easycode; title:;lang:;"> def ButtonLed(ev=None):
+    global led_status
+    # Switch led status(on-->off; off-->on)
+    led_status = not led_status
+    GPIO.output(LedPin, led_status)
+    if led_status:
+        print('|*************|')
+        print('|  LED OFF... |')
+        print('|*************|')
+        print('\n')
+    else:
+        print('|*************|')
+        print('|  ...LED ON  |')
+        print('|*************|')
+        print('\n')</pre>
+<p><strong>c. In callback function, LedPin level is reversed. It means, when LedPin level is off, the LED is on, and when LedPin level is on, the LED is off.</strong></p>
+<pre class="easycode; title:;lang:;"> def main():
+    # Print messages
+    print_message()
+    while True:
+        # Don't do anything.
+        time.sleep(1)</pre>
+<p><strong>d. main function works as nothing except waiting for breakoff.</strong></p>
+<center><a href="../Lesson 6 Breathing LED/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\15.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\16.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 8 Raspberry Pi Drive Active Buzzer/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\17.jpg" alt="" width="156" height="41" /></a></font></center>

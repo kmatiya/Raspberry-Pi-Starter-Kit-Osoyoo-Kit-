@@ -1,0 +1,84 @@
+﻿<html>
+<head>
+<title>Lesson 21: Make IOT Home Alarm System with Pi</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+ <p style="text-align: left;">
+    <span style="font-size: 48px;"><img src="..\..\AboutThisKit\osoyoo_logo.jpg" title="" alt="osyoo logo.jpg"/></span>
+</p>
+<p href ="www.osoyoo.com" align="right" class="TOC" size=="50"><b>www.osoyoo.com/?p=11587</b></p>
+<hr />
+<body>
+<a href="../index.html"><font face=Arial>Back to Raspberry Pi Tutoial Index Page</a>
+<hr >
+<h1>Raspberry Pi Starter Kit Lesson 21: Make IOT Home Alarm System with Pi</h1>
+<center><video width="920" height="720" controls>
+  <source src="..\..\Videos\Lesson_21_Make_IOT_Home_ Alarm_System_with_Pi.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></center>
+<ul>
+<li><strong><a href="#1">Objective</a></strong></li>
+<li><strong><a href="#2">Perquisite:</a></strong></li>
+<li><strong><a href="#3">Hardware Preparation:</a></strong></li>
+<li><strong><a href="#4">Hardware Setup</a></strong></li>
+<li><strong><a href="#5">Software</a></strong></li>
+</ul>
+<p><a id=1><strong>Objective</strong></a></p>
+<p>In this lesson, we will use Raspberry Pi , PIR motion sensor and buzzer to make a home intruder alarm system. When an intruder is detected by PIR motion sensor, the buzzer will beep and Raspberry Pi will send alarm message to remote MQTT client device through Internet.</p>
+<p><a id=2><strong>Perquisite: </strong></a></p>
+<p>You should have registered a mosquitto MQTT broker server. There are many free only mosquitto server online, you can google it. We use <em>broker.mqtt-dashboard.com in this lesson. </em> You can also check instruction in http://osoyoo.com/2016/09/07/how-to-install-mosquitto-mqtt-server-on-linux/ and install your own MQTT broker. Write down the IP address or Domain name of your mosquitto server. We will use it later.</p>
+<p><a id=3><strong>Hardware Preparation:</strong></a></p>
+<p>1 x Raspberry Pi</p>
+<p>1 x PIR motion sensor</p>
+<p>1 x buzzer</p>
+<p>breadboards and jumper wires.</p>
+<p>Circuit connection Graph:</p>
+<p><center><a href=".\image\0.jpg"><img class="alignnone size-medium wp-image-4228" src=".\image\0.jpg" alt="htghnthg" width="300" height="288" /></center></a></p>
+<p><a id=4>Hardware Setup:</a></p>
+<p>PIR sensor signal pin(yellow pin) connect to Pi GPIO 17</p>
+<p>Buzzer signal pin(purple pin) connect to PI GPIO 18</p>
+<p>PIR sensor red pin to 5V</p>
+<p>PIR sensor and buzzer black pin to GND</p>
+<p><a href=".\image\1.jpg"><center><img class="aligncenter wp-image-9298 size-large" src=".\image\1.jpg" alt="" width="1024" height="575" /></center></a></p>
+<p><a id=5><strong>Software</strong></a></p>
+<p><strong>Step 1)</strong> Install Node.js on Raspberry Pi by running following commands in raspberry pi terminal:</p>
+<pre>curl -sLS https://apt.adafruit.com/add | sudo bash</pre>
+<pre>sudo apt-get install node</pre>
+<p>If node.js is installed successfully, you should see node.js version by running following command:</p>
+<pre>node -v</pre>
+<p><a href=".\image\2.jpg"><center><img class="aligncenter wp-image-9299 size-large" src=".\image\2.jpg" alt="" width="1024" height="269" /></center></a></p>
+<p><strong>Step 3) </strong>Download and unzip sample files by running following command:</p>
+<pre>wget http://osoyoo.com/driver/intruderDetection.tar.gz</pre>
+<pre>tar -zxvf intruderDetection.tar.gz</pre>
+<p><strong>Step 4) </strong>Initialize node project</p>
+<pre>cd intruderDetection
+
+npm init</pre>
+<p>In original source code, we use free mqtt broker server : <em>broker.mqtt-dashboard.com</em> , If you have your own mosquito broker,</p>
+<p>please type command <strong><em>nano index.js </em></strong>to edit index.js file and change the ip address (in line 12) to your mosquitto broker server IP.</p>
+<p><strong>Step 5)</strong> Install GPIO communication module onoff:</p>
+<pre> npm install onoff --save</pre>
+<p><strong>Step 6) </strong>Install Email module nodemailer</p>
+<pre>npm install nodemailer --save</pre>
+<p><strong>Step 7)</strong> Start node.js program by running following command:</p>
+<pre>sudo node index.js</pre>
+<p><a href=".\image\3.jpg"><center><img class="aligncenter wp-image-9300 size-full" src=".\image\3.jpg" alt="" width="756" height="227" /></center></a></p>
+<p><strong>Result on Raspberry Pi:</strong><br />
+Now make some motion near PIR sensor, you will hear buzzer sounds  In raspberry Pi terminal, you will see "osoyoo/alert: Intruder detected" message.</p>
+<p><strong>Result on MQTT client device:</strong></p>
+<p>You can use any MQTT client software or mobile app to receive remote alert message from Raspberry Pi.   You can google keyword "MQTT client" to get more information.</p>
+<p>If you want to use Raspberry Pi or other linux computer as MQTT client. You can take following steps to test our alarm message:<br />
+<strong>Step 1)</strong>Install mosquitto client software in Pi (you should open another terminal window if you are currently running<em> sudo node index.js</em> command, don't stop this program)</p>
+<pre>sudo apt-get install mosquitto-clients</pre>
+<p><a href=".\image\4.jpg"><center><img class="aligncenter wp-image-9301 size-full" src=".\image\4.jpg" alt="" width="782" height="288" /></center></a></p>
+<p><strong>Step 2)</strong> subscribe  message from <em>broker.mqtt-dashboard.com </em>with topic "osoyoo/#" with following command:</p>
+<pre></pre>
+<pre><i>sudo mosquitto_sub -h "broker.mqtt-dashboard.com" -t  "osoyoo/#" -v</i></pre>
+<p><a href=".\image\5.jpg"><center><img class="aligncenter wp-image-9302 size-full" src=".\image\5.jpg" alt="" width="779" height="205" /></center></a></p>
+<p>When PIR sensor detects motion,   you will see "osoyoo/alert: Intruder detected" message  in client terminal window. This means raspberry pi has published a mqtt message to <em>broker.mqtt-dashboard.com</em> broker and you got such message through subscription.</p>
+<p>If you are using other MQTT client device, please subscribe the topic  "osoyoo/#" from broker url "<em>broker.mqtt-dashboard.com". </em> Once human motion is detected by Raspberry Pi,  client device will also show " "osoyoo/alert: Intruder detected" message.</p>
+<center><a href="../Lesson 20 Use Raspberry Pi + IR Remote to Control Other Devices/index.html"><img class="alignnone wp-image-6442 size-full" src=".\image\6.jpg" alt="" width="156" height="41" /></a>                  <a href="../index.html"><img class="alignnone wp-image-6443 size-full" src=".\image\7.jpg" alt="" width="236" height="39" /></a>                  <a href="../Lesson 22 8-Channel Logic Level Converter/index.html"><img class="alignnone size-full wp-image-6445" src=".\image\8.jpg" alt="" width="156" height="41" /></a></font></center>
+
+
